@@ -1,0 +1,22 @@
+﻿<prism:PrismApplication
+    x:Class="ClipMate.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:ClipMate"
+    xmlns:prism="http://prismlibrary.com/">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml" />
+
+                <!--  Add your custom resources here  -->
+                <ResourceDictionary Source="Themes/Converters.xaml" />
+                <ResourceDictionary Source="Themes/DataTemplate.xaml" />
+                <ResourceDictionary Source="Themes/Settings.xaml" />
+                <ResourceDictionary Source="Themes/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</prism:PrismApplication>

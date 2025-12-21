@@ -1,0 +1,165 @@
+<UserControl
+    x:Class="ClipMate.Views.ClipboardView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="clr-namespace:ClipMate.Behaviors"
+    xmlns:controls="clr-namespace:ClipMate.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:ClipMate.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="http://prismlibrary.com/"
+    xmlns:vm="clr-namespace:ClipMate.ViewModels"
+    d:DataContext="{d:DesignInstance Type=vm:ClipboardViewModel}"
+    d:DesignHeight="700"
+    d:DesignWidth="500"
+    prism:ViewModelLocator.AutoWireViewModel="True"
+    mc:Ignorable="d">
+    <UserControl.InputBindings>
+        <KeyBinding
+            Key="{Binding FavoriteFilterHotKeyKey}"
+            Modifiers="{Binding FavoriteFilterHotKeyModifiers}"
+            Command="{Binding ToggleFavoriteFilterCommand}" />
+    </UserControl.InputBindings>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  剪贴板  -->
+        <hc:SimplePanel>
+            <ListView
+                Name="ListView"
+                HorizontalContentAlignment="Stretch"
+                BorderThickness="0"
+                ContextMenuOpening="ListView_ContextMenuOpening"
+                ItemContainerStyle="{StaticResource NoFocusListViewItemStyle}"
+                ItemsSource="{Binding ClipboardItems}"
+                ScrollViewer.CanContentScroll="True"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                SelectedItem="{Binding SelectedItem}"
+                VirtualizingPanel.CacheLength="2"
+                VirtualizingPanel.CacheLengthUnit="Page"
+                VirtualizingPanel.IsVirtualizing="True"
+                VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+                VirtualizingPanel.ScrollUnit="Pixel"
+                VirtualizingPanel.VirtualizationMode="Recycling">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <i:Interaction.Behaviors>
+                    <behaviors:ListViewItemClickBehavior ClearSelectionOnBlankClick="True" ItemClickCommand="{Binding PasteCommand}" />
+                    <behaviors:GridViewColumnAutoWidthBehavior />
+                </i:Interaction.Behaviors>
+                <ListView.InputBindings>
+                    <KeyBinding
+                        Key="Enter"
+                        Command="{Binding PasteCommand}"
+                        CommandParameter="{Binding SelectedItem}" />
+                </ListView.InputBindings>
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem
+                            Command="{Binding MoveToTopCommand}"
+                            CommandParameter="{Binding SelectedItem}"
+                            Header="置顶" />
+                        <MenuItem
+                            Command="{Binding ToggleFavoriteCommand}"
+                            CommandParameter="{Binding SelectedItem}"
+                            Header="收藏"
+                            Visibility="{Binding SelectedItem.IsFavorite, Converter={StaticResource BooleanToVisibilityReConverter}}" />
+                        <MenuItem
+                            Command="{Binding ToggleFavoriteCommand}"
+                            CommandParameter="{Binding SelectedItem}"
+                            Header="取消收藏"
+                            Visibility="{Binding SelectedItem.IsFavorite, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <Separator />
+                        <MenuItem
+                            Command="{Binding CopyCommand}"
+                            CommandParameter="{Binding SelectedItem}"
+                            Header="复制" />
+                        <MenuItem
+                            Command="{Binding PasteCommand}"
+                            CommandParameter="{Binding SelectedItem}"
+                            Header="粘贴" />
+                        <MenuItem
+                            Command="{Binding DeleteCommand}"
+                            CommandParameter="{Binding SelectedItem}"
+                            Header="删除" />
+                    </ContextMenu>
+                </ListView.ContextMenu>
+                <ListView.View>
+                    <GridView>
+                        <GridView.ColumnHeaderContainerStyle>
+                            <Style TargetType="GridViewColumnHeader">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Style>
+                        </GridView.ColumnHeaderContainerStyle>
+                        <GridViewColumn CellTemplateSelector="{StaticResource ClipboardItemTemplateSelector}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <controls:FixedGotoTop
+                Margin="0,0,10,10"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Animated="True"
+                HidingHeight="500"
+                Style="{StaticResource GotoTopSmallStyle}"
+                Target="{Binding ElementName=ListView}" />
+        </hc:SimplePanel>
+
+        <!--  搜索栏  -->
+        <Grid Grid.Row="1" Margin="5,0,5,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <hc:SearchBar
+                Name="SearchBox"
+                Grid.Column="0"
+                Height="35"
+                hc:InfoElement.Placeholder="搜索剪贴板..."
+                Command="{Binding SearchCommand}"
+                CommandParameter="{Binding Text, RelativeSource={RelativeSource Self}}"
+                GotFocus="SearchBox_GotFocus"
+                LostFocus="SearchBox_LostFocus"
+                PreviewKeyDown="SearchBox_PreviewKeyDown"
+                PreviewMouseDown="SearchBox_PreviewMouseDown"
+                Style="{StaticResource SearchBarPlus}"
+                Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" />
+            <ToggleButton
+                Grid.Column="1"
+                Width="35"
+                Height="35"
+                Margin="5,0,0,0"
+                hc:BorderElement.CornerRadius="4"
+                Background="{DynamicResource RegionBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1"
+                Command="{Binding ToggleFavoriteFilterCommand}"
+                IsChecked="{Binding IsFavoriteFilterEnabled, Mode=OneWay}"
+                Style="{StaticResource ToggleButtonCustom}"
+                ToolTip="仅显示收藏">
+                <hc:StatusSwitchElement.CheckedElement>
+                    <Path
+                        Width="16"
+                        Height="16"
+                        Data="{StaticResource StarGeometry}"
+                        Fill="{DynamicResource FavoriteStarColor}"
+                        Stretch="Uniform" />
+                </hc:StatusSwitchElement.CheckedElement>
+                <Path
+                    Width="16"
+                    Height="16"
+                    Data="{StaticResource StarGeometry}"
+                    Fill="{DynamicResource SecondaryTextBrush}"
+                    Stretch="Uniform" />
+            </ToggleButton>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/SolutionItems/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+  </Folder>
+  <Project Path="src/ClipMate.Tests/ClipMate.Tests.csproj" />
+  <Project Path="src/ClipMate.Core.Tests/ClipMate.Core.Tests.csproj" />
+  <Project Path="src/ClipMate.Core/ClipMate.Core.csproj" />
+  <Project Path="src/ClipMate.Platform.Abstractions/ClipMate.Platform.Abstractions.csproj" />
+  <Project Path="src/ClipMate.Platform.Abstractions.Tests/ClipMate.Platform.Abstractions.Tests.csproj" />
+  <Project Path="src/ClipMate.Service/ClipMate.Service.csproj" />
+  <Project Path="src/ClipMate.Service.Tests/ClipMate.Service.Tests.csproj" />
+  <Project Path="src/ClipMate.Platform.Windows/ClipMate.Platform.Windows.csproj" />
+  <Project Path="src/ClipMate/ClipMate.csproj" />
+</Solution>

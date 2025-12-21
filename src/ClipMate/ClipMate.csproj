@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <!-- 项目特有属性，通用属性已在 Directory.Build.props 中定义 -->
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <OutputType>WinExe</OutputType>
+        <UseWPF>true</UseWPF>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <ApplicationIcon>ClipMate.ico</ApplicationIcon>
+        <AssemblyVersion>0.4.0</AssemblyVersion>
+        <FileVersion>0.4.0</FileVersion>
+        <Product>ClipMate</Product>
+        <Company>ClipMate Team</Company>
+        <Copyright>Copyright © ClipMate Team 2025</Copyright>
+        <Description>剪贴板管理工具</Description>
+        <BaseOutputPath>$(MSBuildProjectDirectory)..\..\..\bin\</BaseOutputPath>
+    </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="ClipMate.ico" />
+  </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\ClipMate.Core\ClipMate.Core.csproj" />
+        <ProjectReference Include="..\ClipMate.Platform.Windows\ClipMate.Platform.Windows.csproj" />
+        <ProjectReference Include="..\ClipMate.Service\ClipMate.Service.csproj" />
+    </ItemGroup>
+
+    <!-- 包引用 - 版本已通过 Directory.Packages.props 统一管理 -->
+    <ItemGroup>
+        <!-- MVVM 和 UI 框架 -->
+        <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="HandyControl" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+        <PackageReference Include="Prism.Core" />
+        <PackageReference Include="Prism.DryIoc" />
+        <PackageReference Include="Prism.Wpf" />
+
+        <!-- 配置管理 -->
+        <PackageReference Include="Microsoft.Extensions.Configuration" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+
+        <!-- 日志（已在 Directory.Build.props 中包含，此处可根据需要添加其他 sink） -->
+        <PackageReference Include="Serilog.Sinks.Debug" />
+        <PackageReference Include="Serilog.Sinks.File" />
+
+        <!-- 系统交互 -->
+        <PackageReference Include="NHotkey.Wpf" />
+        <PackageReference Include="SharpHook" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+</Project>

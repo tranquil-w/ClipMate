@@ -1,0 +1,8 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:inf="clr-namespace:ClipMate.Infrastructure"
+    xmlns:localConverters="clr-namespace:ClipMate.Converters">
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    <localConverters:BooleanToVisibilityReConverter x:Key="BooleanToVisibilityReConverter" />
+</ResourceDictionary>

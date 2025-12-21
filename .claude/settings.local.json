@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(codex-wrapper - :*)",
+      "Skill(codex)",
+      "Bash(find:*)",
+      "Bash(git log:*)",
+      "Bash(codex-wrapper:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(openspec validate:*)",
+      "Bash(openspec list:*)",
+      "Bash(cd:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)",
+      "mcp__web-search-prime__webSearchPrime",
+      "WebSearch",
+      "mcp__context7__resolve-library-id",
+      "Bash(ls:*)",
+      "Bash(xargs:*)",
+      "Bash(grep:*)",
+      "Bash(dir:*)",
+      "Bash(git mv:*)",
+      "Bash(cat:*)",
+      "Bash(tree:*)",
+      "Bash(dotnet clean:*)",
+      "Bash(openspec archive:*)",
+      "Skill(collaborating-with-codex)",
+      "SlashCommand(/openspec:proposal)",
+      "Bash(mkdir:*)"
+    ]
+  },
+  "spinnerTipsEnabled": true
+}

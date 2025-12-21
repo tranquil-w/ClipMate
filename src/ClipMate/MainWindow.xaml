@@ -1,0 +1,52 @@
+﻿<hc:Window
+    x:Class="ClipMate.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:inf="clr-namespace:ClipMate.Infrastructure"
+    xmlns:local="clr-namespace:ClipMate"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prism="http://prismlibrary.com/"
+    xmlns:vm="clr-namespace:ClipMate.ViewModels"
+    Title="ClipMate"
+    Width="360"
+    Height="400"
+    MinWidth="200"
+    MinHeight="300"
+    AllowsTransparency="True"
+    Background="{DynamicResource SecondaryRegionBrush}"
+    BorderThickness="0"
+    PreviewKeyDown="MainWindow_PreviewKeyDown"
+    ShowInTaskbar="False"
+    Topmost="True"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
+    mc:Ignorable="d">
+
+    <hc:Window.OpacityMask>
+        <VisualBrush
+            Stretch="Fill"
+            Viewbox="0 0 1 1"
+            ViewboxUnits="RelativeToBoundingBox">
+            <VisualBrush.Visual>
+                <Rectangle
+                    Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=hc:Window}}"
+                    Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=hc:Window}}"
+                    Fill="Black"
+                    RadiusX="{StaticResource WindowCornerRadiusValue}"
+                    RadiusY="{StaticResource WindowCornerRadiusValue}" />
+            </VisualBrush.Visual>
+        </VisualBrush>
+    </hc:Window.OpacityMask>
+
+    <hc:Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{Binding CloseWindowCommand}" />
+    </hc:Window.InputBindings>
+
+    <!--  主区域  -->
+    <Border CornerRadius="{StaticResource WindowCornerRadius}">
+        <ContentControl prism:RegionManager.RegionName="{x:Static inf:RegionNames.MainRegion}" />
+    </Border>
+</hc:Window>
