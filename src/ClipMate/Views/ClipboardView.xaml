@@ -19,8 +19,8 @@
     <UserControl.InputBindings>
         <KeyBinding
             Key="{Binding FavoriteFilterHotKeyKey}"
-            Modifiers="{Binding FavoriteFilterHotKeyModifiers}"
-            Command="{Binding ToggleFavoriteFilterCommand}" />
+            Command="{Binding ToggleFavoriteFilterCommand}"
+            Modifiers="{Binding FavoriteFilterHotKeyModifiers}" />
     </UserControl.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
@@ -127,7 +127,6 @@
                 Command="{Binding SearchCommand}"
                 CommandParameter="{Binding Text, RelativeSource={RelativeSource Self}}"
                 GotFocus="SearchBox_GotFocus"
-                LostFocus="SearchBox_LostFocus"
                 PreviewKeyDown="SearchBox_PreviewKeyDown"
                 PreviewMouseDown="SearchBox_PreviewMouseDown"
                 Style="{StaticResource SearchBarPlus}"

@@ -13,10 +13,8 @@ using Serilog;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 using System.Windows.Data;
 using System.Windows;
 using System.Windows.Threading;
@@ -565,7 +563,7 @@ public partial class ClipboardViewModel : ObservableObject
     /// </summary>
     public void OnWindowShown()
     {
-        if (ClipboardItemsView is ListCollectionView view && view.Count > 0)    
+        if (ClipboardItemsView is ListCollectionView view && view.Count > 0)
         {
             SelectedItem = view.GetItemAt(0) as IClipboardContent;
             ScrollToSelectedRequested?.Invoke(this, EventArgs.Empty);
@@ -597,16 +595,11 @@ public partial class ClipboardViewModel : ObservableObject
         ScrollToSelectedRequested?.Invoke(this, EventArgs.Empty);
     }
 
-    public void AppendSearchText(string text)
+    /// <summary>
+    /// 仅触发搜索框聚焦，不修改搜索内容
+    /// </summary>
+    public void RequestSearchBoxFocus()
     {
-        if (string.IsNullOrEmpty(text))
-        {
-            return;
-        }
-
-        SearchQuery += text;
-
-        // 触发搜索框焦点请求（在文本追加后）
         SearchBoxFocusRequested?.Invoke(this, EventArgs.Empty);
     }
 
