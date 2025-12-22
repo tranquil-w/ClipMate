@@ -14,6 +14,6 @@ internal static class AppVersionProvider
         return System.Reflection.Assembly
             .GetExecutingAssembly()
             .GetName()
-            .Version?.ToString() ?? "未知版本";
+            .Version?.ToString(3) ?? "未知版本";
     }
 }
