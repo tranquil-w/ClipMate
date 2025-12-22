@@ -39,7 +39,7 @@ public sealed class PresentationBoundaryTests
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
         while (directory != null)
         {
-            if (File.Exists(Path.Combine(directory.FullName, "ClipMate.Portable.slnx")))
+            if (File.Exists(Path.Combine(directory.FullName, "ClipMate.slnx")))
             {
                 return directory.FullName;
             }
@@ -47,7 +47,7 @@ public sealed class PresentationBoundaryTests
             directory = directory.Parent;
         }
 
-        throw new DirectoryNotFoundException("无法定位仓库根目录（缺少 ClipMate.Portable.slnx）。");
+        throw new DirectoryNotFoundException("无法定位仓库根目录（缺少 ClipMate.slnx）。");
     }
 }
 

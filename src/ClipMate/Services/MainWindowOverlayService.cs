@@ -153,6 +153,16 @@ public sealed class MainWindowOverlayService
                 e.Suppress = true;
                 return;
 
+            case VirtualKey.Space:
+                if (hasDisallowedModifiers)
+                {
+                    return;
+                }
+                _ = Application.Current.Dispatcher.InvokeAsync(
+                    () => GetClipboardViewModel().RequestSearchBoxFocus());
+                e.Suppress = true;
+                return;
+
             case VirtualKey.Backspace:
             case VirtualKey.Delete:
                 if (hasDisallowedModifiers)
@@ -163,19 +173,6 @@ public sealed class MainWindowOverlayService
                 e.Suppress = true;
                 return;
         }
-
-        if (TryGetPrintableText(e.Key, e.Modifiers, out var text))
-        {
-            if (hasDisallowedModifiers)
-            {
-                // 放行带修饰键的输入（例如 Ctrl+` 作为显示/隐藏快捷键）
-                return;
-            }
-
-            _ = Application.Current.Dispatcher.InvokeAsync(() => GetClipboardViewModel().AppendSearchText(text));
-            e.Suppress = true;
-            return;
-        }
     }
 
     private ClipMate.ViewModels.ClipboardViewModel GetClipboardViewModel()
@@ -183,44 +180,4 @@ public sealed class MainWindowOverlayService
         return _clipboardViewModel ??= _container.Resolve<ClipMate.ViewModels.ClipboardViewModel>();
     }
 
-    private static bool TryGetPrintableText(
-        VirtualKey key,
-        KeyModifiers modifiers,
-        out string text)
-    {
-        var shift = modifiers.HasFlag(KeyModifiers.Shift);
-
-        if (key is >= VirtualKey.A and <= VirtualKey.Z)
-        {
-            var c = (char)('a' + (key - VirtualKey.A));
-            text = shift ? char.ToUpperInvariant(c).ToString() : c.ToString();
-            return true;
-        }
-
-        if (key == VirtualKey.D0 || (key is >= VirtualKey.D1 and <= VirtualKey.D9))
-        {
-            var digit = key == VirtualKey.D0 ? '0' : (char)('1' + (key - VirtualKey.D1));
-            text = digit.ToString();
-            return true;
-        }
-
-        text = key switch
-        {
-            VirtualKey.Space => " ",
-            VirtualKey.Comma => ",",
-            VirtualKey.Period => ".",
-            VirtualKey.Slash => "/",
-            VirtualKey.Semicolon => ";",
-            VirtualKey.Quote => "'",
-            VirtualKey.Minus => "-",
-            VirtualKey.Equals => "=",
-            VirtualKey.LeftBracket => "[",
-            VirtualKey.RightBracket => "]",
-            VirtualKey.Backslash => "\\",
-            VirtualKey.BackQuote => "`",
-            _ => string.Empty
-        };
-
-        return text.Length > 0;
-    }
 }
