@@ -27,6 +27,7 @@ namespace ClipMate
             Closing += MainWindow_Closing;
 
             _noActivateWindowController = new NoActivateWindowController(this);
+            ContextMenuTracker.ContextMenuStateChanged += OnContextMenuStateChanged;
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -78,6 +79,11 @@ namespace ClipMate
             // Prevent the window from closing
             Hide();
             e.Cancel = true;
+        }
+
+        private void OnContextMenuStateChanged(bool isOpen)
+        {
+            _noActivateWindowController.SetOutsideClickSuppressed(isOpen);
         }
     }
 }

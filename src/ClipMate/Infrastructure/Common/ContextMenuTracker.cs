@@ -11,6 +11,9 @@ namespace ClipMate.Infrastructure
     public static class ContextMenuTracker
     {
         private static bool _isInitialized;
+        private static int _openMenuCount;
+
+        public static event Action<bool>? ContextMenuStateChanged;
 
         /// <summary>
         /// 是否有 ContextMenu 正在显示或刚刚关闭
@@ -38,15 +41,28 @@ namespace ClipMate.Infrastructure
 
         private static void OnContextMenuOpened(object sender, RoutedEventArgs e)
         {
-            IsContextMenuOpen = true;
+            UpdateContextMenuState(_openMenuCount + 1);
         }
 
         private static void OnContextMenuClosed(object sender, RoutedEventArgs e)
         {
             // 延迟重置标志，确保点击事件处理时标志仍为 true
             Application.Current.Dispatcher.BeginInvoke(
-                new Action(() => IsContextMenuOpen = false),
+                new Action(() => UpdateContextMenuState(_openMenuCount - 1)),
                 DispatcherPriority.Input);
+        }
+
+        private static void UpdateContextMenuState(int nextCount)
+        {
+            _openMenuCount = Math.Max(0, nextCount);
+            var isOpen = _openMenuCount > 0;
+            if (IsContextMenuOpen == isOpen)
+            {
+                return;
+            }
+
+            IsContextMenuOpen = isOpen;
+            ContextMenuStateChanged?.Invoke(isOpen);
         }
 
         /// <summary>

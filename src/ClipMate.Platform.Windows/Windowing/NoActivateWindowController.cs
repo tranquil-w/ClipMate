@@ -11,6 +11,7 @@ internal sealed class NoActivateWindowController
     private HwndSource? _source;
     private bool _ignoreUntilButtonUp;
     private bool _isNoActivateSuspended;
+    private bool _isOutsideClickSuppressed;
 
     // 外部点击检测：低级鼠标钩子（事件驱动，替代轮询）
     private nint _mouseHook;
@@ -100,6 +101,11 @@ internal sealed class NoActivateWindowController
         _isNoActivateSuspended = false;
     }
 
+    internal void SetOutsideClickSuppressed(bool suppressed)
+    {
+        _isOutsideClickSuppressed = suppressed;
+    }
+
     private nint WndProc(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
     {
         // 当无焦点模式暂停时，不拦截消息
@@ -174,6 +180,11 @@ internal sealed class NoActivateWindowController
         }
 
         if (!_window.IsVisible)
+        {
+            return CallNextHookEx(_mouseHook, nCode, wParam, lParam);
+        }
+
+        if (_isOutsideClickSuppressed)
         {
             return CallNextHookEx(_mouseHook, nCode, wParam, lParam);
         }
@@ -288,4 +299,5 @@ internal sealed class NoActivateWindowController
         public readonly int Right;
         public readonly int Bottom;
     }
+
 }
