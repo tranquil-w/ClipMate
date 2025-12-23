@@ -251,12 +251,22 @@ public partial class ClipboardViewModel : ObservableObject
             var captureResult = await _clipboardCaptureUseCase.CaptureAsync(e.Payload);
             TryCompletePendingPaste(e.Payload, captureResult);
 
-            if (captureResult.Id < 0 || captureResult.Item == null)
+            // 检查是否是已存在的重复项（需要置顶）
+            var existingItem = ClipboardItems.FirstOrDefault(x => x.Value.Id == captureResult.Id);
+            if (existingItem != null)
             {
-                _logger.Debug("检测到重复内容或空内容，跳过插入: {Payload}", DescribePayload(e.Payload));
+                // 将已存在的重复项置顶
+                await MoveItemToTopAsync(existingItem, "重复内容置顶");
                 return;
             }
 
+            if (captureResult.Id < 0 || captureResult.Item == null)
+            {
+                _logger.Debug("检测到空内容，跳过插入: {Payload}", DescribePayload(e.Payload));
+                return;
+            }
+
+            // 新内容，插入到列表顶部
             var clipItem = _clipboardService.Create(captureResult.Item);
             ClipboardItems.Insert(0, clipItem);
             _logger.Information("插入新项: {Content}", clipItem.Summary);
