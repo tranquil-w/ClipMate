@@ -326,10 +326,14 @@ public class DatabaseService : IDatabaseService
 
                 if (duplicateIdByHash.HasValue)
                 {
+                    // 更新重复项的 CreatedAt 时间戳
+                    await connection.ExecuteAsync(
+                        "UPDATE ClipboardItems SET CreatedAt = @CreatedAt WHERE Id = @Id",
+                        new { Id = duplicateIdByHash.Value, CreatedAt = DateTime.Now });
                     sw.Stop();
                     LogQueryTiming("InsertItemAsync", "dedup(ContentHash)", sw.ElapsedMilliseconds, 0);
-                    _logger.Information("检测到重复的剪贴板内容（哈希匹配），跳过插入。类型：{ContentType}", item.ContentType);
-                    return -1;
+                    _logger.Information("检测到重复的剪贴板内容（哈希匹配），更新时间戳并返回ID。类型：{ContentType}", item.ContentType);
+                    return duplicateIdByHash.Value;
                 }
 
                 var lastItem = await connection.QueryFirstOrDefaultAsync<ClipboardItem>(
@@ -340,10 +344,14 @@ public class DatabaseService : IDatabaseService
                     lastItem.ContentType == item.ContentType &&
                     IsDuplicateContent(lastItem.Content, item.Content))
                 {
+                    // 更新重复项的 CreatedAt 时间戳和 ContentHash
+                    await connection.ExecuteAsync(
+                        "UPDATE ClipboardItems SET CreatedAt = @CreatedAt, ContentHash = @Hash WHERE Id = @Id",
+                        new { Id = lastItem.Id, CreatedAt = DateTime.Now, Hash = item.ContentHash });
                     sw.Stop();
                     LogQueryTiming("InsertItemAsync", "dedup(last-item)", sw.ElapsedMilliseconds, 0);
-                    _logger.Debug("检测到重复的剪贴板内容（旧数据无哈希），跳过插入。类型：{ContentType}", item.ContentType);
-                    return -1;
+                    _logger.Debug("检测到重复的剪贴板内容（旧数据无哈希），更新时间戳并返回ID。类型：{ContentType}", item.ContentType);
+                    return lastItem.Id;
                 }
             }
             else
