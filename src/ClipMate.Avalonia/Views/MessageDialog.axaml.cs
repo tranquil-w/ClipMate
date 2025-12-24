@@ -28,14 +28,20 @@ public partial class MessageDialog : Window
 
     public Task<bool> ShowDialogAsync(Window? owner)
     {
-        if (owner != null)
+        if (owner != null && owner.IsVisible)
         {
-            _ = ShowDialog(owner);
+            try
+            {
+                _ = ShowDialog(owner);
+                return _tcs.Task;
+            }
+            catch (InvalidOperationException)
+            {
+                // Fall through to non-modal show if the owner is not in a valid state.
+            }
         }
-        else
-        {
-            Show();
-        }
+
+        Show();
 
         return _tcs.Task;
     }

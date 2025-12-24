@@ -4,16 +4,23 @@
     xmlns:local="clr-namespace:ClipMate.Avalonia.Views"
     x:Class="ClipMate.Avalonia.Views.ClipboardView">
   <DockPanel LastChildFill="True">
-    <Border DockPanel.Dock="Bottom" Margin="6">
+    <Border DockPanel.Dock="Bottom" Margin="3">
       <Grid ColumnDefinitions="*,Auto">
-        <TextBox
-          x:Name="SearchBox"
-          Grid.Column="0"
-          Watermark="搜索..."
-          Text="{Binding SearchQuery, Mode=TwoWay}"
-          GotFocus="SearchBox_GotFocus"
-          KeyDown="SearchBox_KeyDown"
-          PointerPressed="SearchBox_PointerPressed" />
+        <Grid Grid.Column="0">
+          <TextBox
+            x:Name="SearchBox"
+            Text="{Binding SearchQuery, Mode=TwoWay}"
+            GotFocus="SearchBox_GotFocus"
+            KeyDown="SearchBox_KeyDown"
+            PointerPressed="SearchBox_PointerPressed" />
+          <TextBlock
+            Margin="8,0,0,0"
+            VerticalAlignment="Center"
+            Foreground="{DynamicResource ClipMateMutedTextBrush}"
+            Text="搜索..."
+            IsHitTestVisible="False"
+            IsVisible="{Binding SearchQuery, Converter={StaticResource StringNullOrEmptyConverter}}" />
+        </Grid>
         <ToggleButton
           Grid.Column="1"
           Width="36"
@@ -23,7 +30,7 @@
           IsChecked="{Binding IsFavoriteFilterEnabled}"
           ToolTip.Tip="仅显示收藏">
           <TextBlock
-            FontSize="16"
+            FontSize="18"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Text="★" />
@@ -33,10 +40,12 @@
 
     <ListBox
       x:Name="ListBox"
+      Margin="3"
       ItemsSource="{Binding ClipboardItems}"
       SelectedItem="{Binding SelectedItem}"
-      DoubleTapped="ListBox_DoubleTapped"
-      KeyDown="ListBox_KeyDown">
+      KeyDown="ListBox_KeyDown"
+      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+      ScrollViewer.VerticalScrollBarVisibility="Auto">
       <ListBox.ContextMenu>
         <ContextMenu>
           <MenuItem

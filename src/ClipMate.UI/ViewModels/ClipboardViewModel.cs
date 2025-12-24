@@ -58,7 +58,7 @@ public partial class ClipboardViewModel : ObservableObject
     private readonly int _searchInfoThresholdMs = 25;
     private readonly int _searchWarningThresholdMs;
     private readonly bool _enableSearchDiagnostics;
-    private CancellationTokenSource? _searchRefreshCts;
+    private int _searchRefreshToken;
     private SearchQuerySnapshot _searchSnapshot = SearchQuerySnapshot.Empty;
 
     private readonly IClipboardService _clipboardService;
@@ -327,10 +327,7 @@ public partial class ClipboardViewModel : ObservableObject
             return;
         }
 
-        _searchRefreshCts?.Cancel();
-        _searchRefreshCts?.Dispose();
-        var cts = new CancellationTokenSource();
-        _searchRefreshCts = cts;
+        var refreshToken = Interlocked.Increment(ref _searchRefreshToken);
         var itemCountSnapshot = _allClipboardItems.Count;
         var dispatcherPriority = immediate ? UiDispatcherPriority.Normal : UiDispatcherPriority.Background;
 
@@ -340,35 +337,36 @@ public partial class ClipboardViewModel : ObservableObject
             {
                 if (!immediate && itemCountSnapshot > _largeListThreshold)
                 {
-                    await Task.Delay(_largeListDelay, cts.Token);
+                    await Task.Delay(_largeListDelay);
                 }
 
                 if (!immediate)
                 {
-                    await Task.Delay(_searchDebounceInterval, cts.Token);
+                    await Task.Delay(_searchDebounceInterval);
                 }
+
+                if (refreshToken != _searchRefreshToken)
+                {
+                    return;
+                }
+
                 await _uiDispatcher.InvokeAsync(
-                    () => RefreshSearch(snapshot, reason),
-                    dispatcherPriority,
-                    cts.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                // 输入被更新或查询重置，跳过过期刷新
+                    () =>
+                    {
+                        if (refreshToken != _searchRefreshToken)
+                        {
+                            return;
+                        }
+
+                        RefreshSearch(snapshot, reason);
+                    },
+                    dispatcherPriority);
             }
             catch (Exception ex)
             {
                 _logger.Error(ex, "搜索刷新失败，原因: {Reason}", reason);
             }
-            finally
-            {
-                if (ReferenceEquals(_searchRefreshCts, cts))
-                {
-                    _searchRefreshCts = null;
-                }
-                cts.Dispose();
-            }
-        }, cts.Token);
+        });
     }
 
     private void RefreshSearch(SearchQuerySnapshot snapshot, string reason)

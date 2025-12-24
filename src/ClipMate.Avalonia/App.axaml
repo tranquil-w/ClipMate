@@ -21,7 +21,16 @@
 
   <Application.DataTemplates>
     <DataTemplate DataType="clipboard:TextClipboard">
-      <Border Margin="6" Padding="10" Background="{DynamicResource ClipMateSurfaceBrush}" CornerRadius="6">
+      <Border Margin="4" Padding="8" Background="{DynamicResource ClipMateSurfaceBrush}" CornerRadius="8">
+        <ToolTip.Tip>
+          <StackPanel MaxWidth="520" Spacing="6">
+            <TextBlock Text="{Binding TextContent}" TextWrapping="Wrap" />
+            <TextBlock
+              FontSize="11"
+              Foreground="{DynamicResource ClipMateMutedTextBrush}"
+              Text="{Binding Value.CreatedAt, StringFormat='创建时间: {0}'}" />
+          </StackPanel>
+        </ToolTip.Tip>
         <Grid ColumnDefinitions="*,Auto">
           <TextBlock
             Grid.Column="0"
@@ -30,8 +39,9 @@
             MaxHeight="{Binding DataContext.ClipboardItemMaxHeight, RelativeSource={RelativeSource AncestorType=ListBox}}" />
           <TextBlock
             Grid.Column="1"
-            Text="*"
+            Text="★"
             Margin="8,0,0,0"
+            FontSize="18"
             Foreground="{DynamicResource ClipMateAccentBrush}"
             IsVisible="{Binding IsFavorite}" />
         </Grid>
@@ -39,7 +49,16 @@
     </DataTemplate>
 
     <DataTemplate DataType="avaloniaClipboard:ImageClipboard">
-      <Border Margin="6" Padding="10" Background="{DynamicResource ClipMateSurfaceBrush}" CornerRadius="6">
+      <Border Margin="4" Padding="8" Background="{DynamicResource ClipMateSurfaceBrush}" CornerRadius="8">
+        <ToolTip.Tip>
+          <StackPanel MaxWidth="520" Spacing="6">
+            <TextBlock Text="{Binding Summary}" />
+            <TextBlock
+              FontSize="11"
+              Foreground="{DynamicResource ClipMateMutedTextBrush}"
+              Text="{Binding Value.CreatedAt, StringFormat='创建时间: {0}'}" />
+          </StackPanel>
+        </ToolTip.Tip>
         <Grid ColumnDefinitions="*,Auto">
           <Image
             Grid.Column="0"
@@ -48,8 +67,9 @@
             Stretch="Uniform" />
           <TextBlock
             Grid.Column="1"
-            Text="*"
+            Text="★"
             Margin="8,0,0,0"
+            FontSize="18"
             Foreground="{DynamicResource ClipMateAccentBrush}"
             IsVisible="{Binding IsFavorite}" />
         </Grid>
@@ -57,7 +77,22 @@
     </DataTemplate>
 
     <DataTemplate DataType="clipboard:FileDropListClipboard">
-      <Border Margin="6" Padding="10" Background="{DynamicResource ClipMateSurfaceBrush}" CornerRadius="6">
+      <Border Margin="4" Padding="8" Background="{DynamicResource ClipMateSurfaceBrush}" CornerRadius="8">
+        <ToolTip.Tip>
+          <StackPanel MaxWidth="520" Spacing="6">
+            <ItemsControl ItemsSource="{Binding FilePathList}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock
+              FontSize="11"
+              Foreground="{DynamicResource ClipMateMutedTextBrush}"
+              Text="{Binding Value.CreatedAt, StringFormat='创建时间: {0}'}" />
+          </StackPanel>
+        </ToolTip.Tip>
         <Grid ColumnDefinitions="*,Auto">
           <TextBlock
             Grid.Column="0"
@@ -66,8 +101,9 @@
             MaxHeight="{Binding DataContext.ClipboardItemMaxHeight, RelativeSource={RelativeSource AncestorType=ListBox}}" />
           <TextBlock
             Grid.Column="1"
-            Text="*"
+            Text="★"
             Margin="8,0,0,0"
+            FontSize="18"
             Foreground="{DynamicResource ClipMateAccentBrush}"
             IsVisible="{Binding IsFavorite}" />
         </Grid>

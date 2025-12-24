@@ -14,8 +14,8 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        DataContext = mainWindowViewModel;
         ClipboardView.DataContext = clipboardViewModel;
+        DataContext = mainWindowViewModel;
 
         NoActivateWindowController = new NoActivateWindowController(this);
         NoActivateWindowController.Attach();

@@ -4,6 +4,7 @@
     xmlns:views="clr-namespace:ClipMate.Avalonia.Views"
     x:Class="ClipMate.Avalonia.MainWindow"
     Title="ClipMate"
+    WindowStartupLocation="CenterScreen"
     Width="360"
     Height="420"
     MinWidth="240"
@@ -11,9 +12,12 @@
     SystemDecorations="None"
     ShowInTaskbar="False"
     Topmost="True"
-    TransparencyLevelHint="Mica">
+    Background="Transparent"
+    ExtendClientAreaToDecorationsHint="True"
+    ExtendClientAreaChromeHints="NoChrome"
+    TransparencyLevelHint="Mica, AcrylicBlur, Blur">
   <Border
-      CornerRadius="12"
+      CornerRadius="8"
       BorderThickness="1"
       BorderBrush="{DynamicResource ClipMateBorderBrush}"
       Background="{DynamicResource ClipMateBackgroundBrush}"

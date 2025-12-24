@@ -22,6 +22,32 @@ public sealed class AvaloniaUserDialogService : IUserDialogService
 
     private static Window? GetOwner()
     {
-        return (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            return null;
+        }
+
+        foreach (var window in desktop.Windows)
+        {
+            if (window.IsActive && window.IsVisible)
+            {
+                return window;
+            }
+        }
+
+        if (desktop.MainWindow?.IsVisible == true)
+        {
+            return desktop.MainWindow;
+        }
+
+        foreach (var window in desktop.Windows)
+        {
+            if (window.IsVisible)
+            {
+                return window;
+            }
+        }
+
+        return null;
     }
 }
