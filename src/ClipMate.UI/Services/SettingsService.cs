@@ -12,6 +12,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AppConstants = ClipMate.Infrastructure.Constants;
 
 namespace ClipMate.Services
 {
@@ -40,7 +41,7 @@ namespace ClipMate.Services
             _autoStartService = autoStartService;
             _loggingLevelSwitch = loggingLevelSwitch;
             _defaultSettingsFilePath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
-            _userSettingsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ClipMate");
+            _userSettingsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppConstants.AppName);
             _settingsFilePath = Path.Combine(_userSettingsDirectory, "settings.json");
             _settings = CreateDefaultSettings();
             LoadSettings();

@@ -18,9 +18,9 @@
     mc:Ignorable="d">
     <UserControl.InputBindings>
         <KeyBinding
-            Key="{Binding FavoriteFilterHotKeyKey}"
+            Key="{Binding FavoriteFilterHotKeyKey, Converter={StaticResource VirtualKeyToWpfKeyConverter}}"
             Command="{Binding ToggleFavoriteFilterCommand}"
-            Modifiers="{Binding FavoriteFilterHotKeyModifiers}" />
+            Modifiers="{Binding FavoriteFilterHotKeyModifiers, Converter={StaticResource KeyModifiersToWpfModifierKeysConverter}}" />
     </UserControl.InputBindings>
     <Grid>
         <Grid.RowDefinitions>

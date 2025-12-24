@@ -1,27 +1,21 @@
 ﻿using ClipMate.Composition;
-using ClipMate.Core.Models;
 using ClipMate.Infrastructure;
-using ClipMate.Service.Interfaces;
+using ClipMate.Messages;
 using ClipMate.Platform.Abstractions.Clipboard;
 using ClipMate.Platform.Abstractions.Input;
-using ClipMate.Platform.Abstractions.Window;
-using ClipMate.Service.Infrastructure;
 using ClipMate.Platform.Abstractions.Tray;
-using ClipMate.Service.Clipboard;
-using ClipMate.Services;
-using ClipMate.Messages;
-using ClipMate.ViewModels;
-using ClipMate.Views;
+using ClipMate.Platform.Abstractions.Window;
 using ClipMate.Platform.Windows.Input;
+using ClipMate.Service.Clipboard;
+using ClipMate.Service.Infrastructure;
+using ClipMate.Service.Interfaces;
+using ClipMate.Services;
+using ClipMate.UI.Bootstrap;
+using ClipMate.ViewModels;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using Serilog.Core;
-using Serilog.Events;
 using System.Windows;
-using System.IO;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace ClipMate
 {
@@ -35,23 +29,11 @@ namespace ClipMate
         private ITrayIcon? _trayIcon;
         private volatile bool _isMainWindowVisible;
         private volatile bool _isMainWindowActive;
-        private readonly LoggingLevelSwitch _loggingLevelSwitch = new(LogEventLevel.Information);
+        private string _appDataFolder = string.Empty;
 
         public static new App Current => (App)Application.Current;
 
         public IConfiguration? Configuration { get; private set; }
-
-        private static string GetAppDataFolder()
-        {
-            // 使用 LocalApplicationData 确保数据存储在用户的本地应用数据文件夹中
-            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var appFolder = Path.Combine(appDataPath, "ClipMate");
-
-            // 确保文件夹存在
-            Directory.CreateDirectory(appFolder);
-
-            return appFolder;
-        }
 
         protected override Window CreateShell()
         {
@@ -68,99 +50,31 @@ namespace ClipMate
             Application.Current.MainWindow = shell;
         }
 
-        private static JsonSerializerOptions CreateSettingsJsonOptions()
-        {
-            return new JsonSerializerOptions
-            {
-                ReadCommentHandling = JsonCommentHandling.Skip,
-                AllowTrailingCommas = true,
-                Converters = { new LogEventLevelJsonConverter(), new JsonStringEnumConverter() }
-            };
-        }
-
-        /// <summary>
-        /// 通用的配置读取方法，从默认设置和用户设置中读取指定属性
-        /// </summary>
-        /// <typeparam name="T">属性类型</typeparam>
-        /// <param name="propertySelector">属性选择器</param>
-        /// <param name="defaultValue">默认值</param>
-        /// <param name="errorMessage">错误日志消息</param>
-        /// <returns>配置值</returns>
-        private T ReadSetting<T>(Func<AppSettings, T?> propertySelector, T defaultValue, string errorMessage) where T : struct
-        {
-            try
-            {
-                var options = CreateSettingsJsonOptions();
-                var defaultSettingsPath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
-                var userSettingsPath = Path.Combine(GetAppDataFolder(), "settings.json");
-
-                T? value = null;
-
-                if (File.Exists(defaultSettingsPath))
-                {
-                    var settings = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(defaultSettingsPath), options);
-                    if (settings != null)
-                        value = propertySelector(settings);
-                }
-
-                if (File.Exists(userSettingsPath))
-                {
-                    var settings = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(userSettingsPath), options);
-                    if (settings != null)
-                        value = propertySelector(settings);
-                }
-
-                return value ?? defaultValue;
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, errorMessage);
-                return defaultValue;
-            }
-        }
-
         /// <summary>
         /// 直接读取 SilentStart 设置（不依赖 DI 容器）
         /// </summary>
         private bool ReadSilentStartSetting()
         {
-            return ReadSetting(s => s.SilentStart, false, "读取静默启动配置时发生错误");
-        }
-
-        /// <summary>
-        /// 读取日志级别设置
-        /// </summary>
-        private LogEventLevel ReadLogLevelSetting()
-        {
-            var level = ReadSetting(s => s.LogLevel, LogEventLevel.Information, "读取日志级别配置时发生错误");
-            return LogLevelPolicy.Normalize(level);
+            return AppSettingsReader.ReadSetting(
+                s => s.SilentStart,
+                false,
+                AppContext.BaseDirectory,
+                _appDataFolder,
+                "读取静默启动配置时发生错误",
+                Log.Logger);
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            // 构建 IConfiguration 对象，加载 appsettings.json
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-            var configuration = builder.Build();
-            Configuration = configuration;
+            var bootstrap = AppBootstrapper.Initialize(AppContext.BaseDirectory);
+            Configuration = bootstrap.Configuration;
+            _appDataFolder = bootstrap.AppDataFolder;
 
-            // 获取用户应用数据文件夹路径
-            var appDataFolder = GetAppDataFolder();
-
-            // 注册日志
-            var logFolder = Path.Combine(appDataFolder, "Logs");
-            Directory.CreateDirectory(logFolder); // 确保日志文件夹存在
-
-            _loggingLevelSwitch.MinimumLevel = ReadLogLevelSetting();
-
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.ControlledBy(_loggingLevelSwitch)
-                .WriteTo.Debug()
-                .WriteTo.File(Path.Combine(logFolder, "clipmate-.log"), rollingInterval: RollingInterval.Day)
-                .CreateLogger();
-
-            containerRegistry.RegisterInfrastructure(configuration, appDataFolder, _loggingLevelSwitch, Log.Logger);
+            containerRegistry.RegisterInfrastructure(
+                bootstrap.Configuration,
+                bootstrap.AppDataFolder,
+                bootstrap.LoggingLevelSwitch,
+                bootstrap.Logger);
             containerRegistry.RegisterAppServices();
             containerRegistry.RegisterPlatformWindows();
             containerRegistry.RegisterServiceLayer();
@@ -237,7 +151,13 @@ namespace ClipMate
         /// </summary>
         private bool ReadAlwaysRunAsAdminSetting()
         {
-            return ReadSetting(s => s.AlwaysRunAsAdmin, false, "读取管理员运行配置时发生错误");
+            return AppSettingsReader.ReadSetting(
+                s => s.AlwaysRunAsAdmin,
+                false,
+                AppContext.BaseDirectory,
+                _appDataFolder,
+                "读取管理员运行配置时发生错误",
+                Log.Logger);
         }
 
         protected override void OnInitialized()
@@ -327,7 +247,7 @@ namespace ClipMate
             keyboardHook.Start();
 
             // 注册快捷键
-            var settingsService = Container.Resolve<ISettingsService>();        
+            var settingsService = Container.Resolve<ISettingsService>();
             var hotkeyService = Container.Resolve<IHotkeyService>();
             var currentHotkey = settingsService.GetHotKey();
 

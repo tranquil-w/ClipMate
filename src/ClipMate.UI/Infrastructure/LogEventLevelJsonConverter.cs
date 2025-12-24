@@ -4,7 +4,7 @@ using Serilog.Events;
 
 namespace ClipMate.Infrastructure
 {
-    internal class LogEventLevelJsonConverter : JsonConverter<LogEventLevel>
+    public class LogEventLevelJsonConverter : JsonConverter<LogEventLevel>
     {
         public override LogEventLevel Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

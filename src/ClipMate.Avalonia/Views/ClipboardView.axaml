@@ -1,0 +1,73 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:ClipMate.Avalonia.Views"
+    x:Class="ClipMate.Avalonia.Views.ClipboardView">
+  <DockPanel LastChildFill="True">
+    <Border DockPanel.Dock="Bottom" Margin="6">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBox
+          x:Name="SearchBox"
+          Grid.Column="0"
+          Watermark="搜索..."
+          Text="{Binding SearchQuery, Mode=TwoWay}"
+          GotFocus="SearchBox_GotFocus"
+          KeyDown="SearchBox_KeyDown"
+          PointerPressed="SearchBox_PointerPressed" />
+        <ToggleButton
+          Grid.Column="1"
+          Width="36"
+          Height="36"
+          Margin="6,0,0,0"
+          Classes="clipmate-toggle"
+          IsChecked="{Binding IsFavoriteFilterEnabled}"
+          ToolTip.Tip="仅显示收藏">
+          <TextBlock
+            FontSize="16"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Text="★" />
+        </ToggleButton>
+      </Grid>
+    </Border>
+
+    <ListBox
+      x:Name="ListBox"
+      ItemsSource="{Binding ClipboardItems}"
+      SelectedItem="{Binding SelectedItem}"
+      DoubleTapped="ListBox_DoubleTapped"
+      KeyDown="ListBox_KeyDown">
+      <ListBox.ContextMenu>
+        <ContextMenu>
+          <MenuItem
+            Header="置顶"
+            Command="{Binding MoveToTopCommand}"
+            CommandParameter="{Binding SelectedItem}" />
+          <MenuItem
+            Header="收藏"
+            Command="{Binding ToggleFavoriteCommand}"
+            CommandParameter="{Binding SelectedItem}"
+            IsVisible="{Binding SelectedItem.IsFavorite, Converter={StaticResource InverseBooleanConverter}}" />
+          <MenuItem
+            Header="取消收藏"
+            Command="{Binding ToggleFavoriteCommand}"
+            CommandParameter="{Binding SelectedItem}"
+            IsVisible="{Binding SelectedItem.IsFavorite}" />
+          <Separator />
+          <MenuItem
+            Header="复制"
+            Command="{Binding CopyCommand}"
+            CommandParameter="{Binding SelectedItem}" />
+          <MenuItem
+            Header="粘贴"
+            Command="{Binding PasteCommand}"
+            CommandParameter="{Binding SelectedItem}" />
+          <MenuItem
+            Header="删除"
+            Command="{Binding DeleteCommand}"
+            CommandParameter="{Binding SelectedItem}" />
+        </ContextMenu>
+      </ListBox.ContextMenu>
+    </ListBox>
+  </DockPanel>
+</UserControl>

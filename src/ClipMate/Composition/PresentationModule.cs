@@ -2,6 +2,7 @@ using ClipMate.Infrastructure;
 using ClipMate.ViewModels;
 using ClipMate.Views;
 using Prism.Ioc;
+using Prism.Mvvm;
 using Prism.Navigation.Regions;
 
 namespace ClipMate.Composition;
@@ -12,6 +13,8 @@ internal static class PresentationModule
     {
         containerRegistry.Register<MainWindowViewModel>();
         containerRegistry.RegisterSingleton<ClipboardViewModel>();
+
+        ViewModelLocationProvider.Register<ClipboardView, ClipboardViewModel>();
 
         var regionManager = containerRegistry.GetContainer().Resolve<IRegionManager>();
         regionManager.RegisterViewWithRegion(RegionNames.MainRegion, typeof(ClipboardView));

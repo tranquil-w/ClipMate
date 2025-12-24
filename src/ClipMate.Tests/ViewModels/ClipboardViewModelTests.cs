@@ -11,7 +11,6 @@ using ClipMate.ViewModels;
 using Moq;
 using Serilog;
 using System.Collections.ObjectModel;
-using System.Windows.Data;
 
 namespace ClipMate.Tests.ViewModels
 {
@@ -43,7 +42,13 @@ namespace ClipMate.Tests.ViewModels
                 _captureUseCaseMock.Object,
                 _historyUseCaseMock.Object,
                 _settingsMock.Object,
+                new ImmediateUiDispatcher(),
                 _loggerMock.Object);
+        }
+
+        private static void SeedItems(ClipboardViewModel viewModel, params Mock<IClipboardContent>[] items)
+        {
+            viewModel.SeedItemsForTest(items.Select(item => item.Object).ToList());
         }
 
         #region OnWindowShown Tests
@@ -57,8 +62,7 @@ namespace ClipMate.Tests.ViewModels
             var viewModel = CreateViewModel();
             var item1 = CreateMockClipboardContent("Item1");
             var item2 = CreateMockClipboardContent("Item2");
-            viewModel.ClipboardItems.Add(item1.Object);
-            viewModel.ClipboardItems.Add(item2.Object);
+            SeedItems(viewModel, item1, item2);
 
             // Act
             viewModel.OnWindowShown();
@@ -92,8 +96,7 @@ namespace ClipMate.Tests.ViewModels
             var viewModel = CreateViewModel();
             var item1 = CreateMockClipboardContent("Hidden", isFavorite: false);
             var item2 = CreateMockClipboardContent("Favorite", isFavorite: true);
-            viewModel.ClipboardItems.Add(item1.Object);
-            viewModel.ClipboardItems.Add(item2.Object);
+            SeedItems(viewModel, item1, item2);
 
             // 启用收藏过滤
             viewModel.IsFavoriteFilterEnabled = true;
@@ -121,8 +124,7 @@ namespace ClipMate.Tests.ViewModels
             var viewModel = CreateViewModel();
             var item1 = CreateMockClipboardContent("Item1");
             var item2 = CreateMockClipboardContent("Item2");
-            viewModel.ClipboardItems.Add(item1.Object);
-            viewModel.ClipboardItems.Add(item2.Object);
+            SeedItems(viewModel, item1, item2);
             viewModel.SelectedItem = item1.Object;
 
             // Act
@@ -141,8 +143,7 @@ namespace ClipMate.Tests.ViewModels
             var viewModel = CreateViewModel();
             var item1 = CreateMockClipboardContent("Item1");
             var item2 = CreateMockClipboardContent("Item2");
-            viewModel.ClipboardItems.Add(item1.Object);
-            viewModel.ClipboardItems.Add(item2.Object);
+            SeedItems(viewModel, item1, item2);
             viewModel.SelectedItem = item2.Object;
 
             // Act
@@ -161,8 +162,7 @@ namespace ClipMate.Tests.ViewModels
             var viewModel = CreateViewModel();
             var item1 = CreateMockClipboardContent("Item1");
             var item2 = CreateMockClipboardContent("Item2");
-            viewModel.ClipboardItems.Add(item1.Object);
-            viewModel.ClipboardItems.Add(item2.Object);
+            SeedItems(viewModel, item1, item2);
             viewModel.SelectedItem = item1.Object;
 
             // Act
@@ -181,8 +181,7 @@ namespace ClipMate.Tests.ViewModels
             var viewModel = CreateViewModel();
             var item1 = CreateMockClipboardContent("Item1");
             var item2 = CreateMockClipboardContent("Item2");
-            viewModel.ClipboardItems.Add(item1.Object);
-            viewModel.ClipboardItems.Add(item2.Object);
+            SeedItems(viewModel, item1, item2);
             viewModel.SelectedItem = item2.Object;
 
             // Act
@@ -201,8 +200,7 @@ namespace ClipMate.Tests.ViewModels
             var viewModel = CreateViewModel();
             var item1 = CreateMockClipboardContent("Item1");
             var item2 = CreateMockClipboardContent("Item2");
-            viewModel.ClipboardItems.Add(item1.Object);
-            viewModel.ClipboardItems.Add(item2.Object);
+            SeedItems(viewModel, item1, item2);
             viewModel.SelectedItem = null;
 
             // Act

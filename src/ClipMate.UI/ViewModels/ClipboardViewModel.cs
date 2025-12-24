@@ -1,24 +1,21 @@
-using ClipMate.Service.Interfaces;
+using ClipMate.Core.Models;
+using ClipMate.Core.Search;
 using ClipMate.Messages;
 using ClipMate.Platform.Abstractions.Clipboard;
-using ClipMate.Core.Search;
-using ClipMate.Service.Clipboard;
-using ClipMate.Core.Models;
+using ClipMate.Platform.Abstractions.Input;
 using ClipMate.Presentation.Clipboard;
+using ClipMate.Service.Clipboard;
+using ClipMate.Service.Interfaces;
 using ClipMate.Services;
+using ClipMate.UI.Abstractions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Serilog;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
-using System.Windows.Data;
-using System.Windows;
-using System.Windows.Threading;
-using System.Windows.Input;
 
 namespace ClipMate.ViewModels;
 
@@ -32,7 +29,6 @@ public partial class ClipboardViewModel : ObservableObject
 
     [ObservableProperty]
     private ObservableCollection<IClipboardContent> _clipboardItems;
-    private ICollectionView? _clipboardItemsView;
 
     [ObservableProperty]
     private IClipboardContent? _selectedItem;
@@ -44,16 +40,18 @@ public partial class ClipboardViewModel : ObservableObject
     private bool _isFavoriteFilterEnabled;
 
     [ObservableProperty]
-    private Key _favoriteFilterHotKeyKey = Key.B;
+    private VirtualKey _favoriteFilterHotKeyKey = VirtualKey.B;
 
     [ObservableProperty]
-    private ModifierKeys _favoriteFilterHotKeyModifiers = ModifierKeys.Control;
+    private KeyModifiers _favoriteFilterHotKeyModifiers = KeyModifiers.Ctrl;
 
     [ObservableProperty]
     private int _clipboardItemMaxHeight = 100;
 
     [ObservableProperty]
     private bool _imeHintsEnabled = true;
+
+    private readonly List<IClipboardContent> _allClipboardItems = [];
     private readonly TimeSpan _searchDebounceInterval = TimeSpan.FromMilliseconds(180);
     private readonly TimeSpan _largeListDelay = TimeSpan.FromMilliseconds(50);
     private readonly int _largeListThreshold = 1000;
@@ -67,6 +65,7 @@ public partial class ClipboardViewModel : ObservableObject
     private readonly IClipboardCaptureUseCase _clipboardCaptureUseCase;
     private readonly IClipboardHistoryUseCase _clipboardHistoryUseCase;
     private readonly ISettingsService _settingsService;
+    private readonly IUiDispatcher _uiDispatcher;
     private readonly ILogger _logger;
     private Task? _initialLoadTask;
     private readonly TimeSpan _pasteDuplicateWaitTimeout = TimeSpan.FromMilliseconds(350);
@@ -78,6 +77,7 @@ public partial class ClipboardViewModel : ObservableObject
         IClipboardCaptureUseCase clipboardCaptureUseCase,
         IClipboardHistoryUseCase clipboardHistoryUseCase,
         ISettingsService settingsService,
+        IUiDispatcher uiDispatcher,
         ILogger logger)
     {
         ClipboardItems = [];
@@ -85,6 +85,7 @@ public partial class ClipboardViewModel : ObservableObject
         _clipboardCaptureUseCase = clipboardCaptureUseCase;
         _clipboardHistoryUseCase = clipboardHistoryUseCase;
         _settingsService = settingsService;
+        _uiDispatcher = uiDispatcher;
         _logger = logger;
         _searchWarningThresholdMs = Math.Max(50,
             int.TryParse(Environment.GetEnvironmentVariable("CLIPMATE_SEARCH_WARN_MS"), out var warnMs) && warnMs > 0
@@ -110,7 +111,7 @@ public partial class ClipboardViewModel : ObservableObject
 
         WeakReferenceMessenger.Default.Register<ImeHintsEnabledChangedMessage>(this, (_, message) =>
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            _uiDispatcher.Invoke(() =>
             {
                 ImeHintsEnabled = message.Value;
             });
@@ -123,7 +124,7 @@ public partial class ClipboardViewModel : ObservableObject
 
         WeakReferenceMessenger.Default.Register<FavoriteFilterHotKeyPressedMessage>(this, (_, _) =>
         {
-            Application.Current.Dispatcher.Invoke(ToggleFavoriteFilter);
+            _uiDispatcher.Invoke(ToggleFavoriteFilter);
         });
 
         _initialLoadTask = LoadHistoryAsync();
@@ -135,7 +136,7 @@ public partial class ClipboardViewModel : ObservableObject
     /// <param name="newHeight">新的高度值</param>
     private void HandleClipboardItemMaxHeightChanged(int newHeight)
     {
-        Application.Current.Dispatcher.Invoke(() =>
+        _uiDispatcher.Invoke(() =>
         {
             ClipboardItemMaxHeight = newHeight;
             _logger.Information("剪贴项最大高度已更新: {Height}", ClipboardItemMaxHeight);
@@ -144,51 +145,18 @@ public partial class ClipboardViewModel : ObservableObject
 
     private void UpdateFavoriteFilterHotkeyBinding(string? hotkey)
     {
-        if (!TryParseKeyGesture(hotkey, out var key, out var modifiers))
+        if (!HotkeyDescriptor.TryParse(hotkey, out var descriptor))
         {
             _logger.Warning("无法解析收藏筛选快捷键: {Hotkey}", hotkey);
-            key = Key.B;
-            modifiers = ModifierKeys.Control;
+            descriptor = new HotkeyDescriptor(VirtualKey.B, KeyModifiers.Ctrl);
         }
 
-        Application.Current.Dispatcher.Invoke(() =>
+        _uiDispatcher.Invoke(() =>
         {
-            FavoriteFilterHotKeyKey = key;
-            FavoriteFilterHotKeyModifiers = modifiers;
+            FavoriteFilterHotKeyKey = descriptor.Value.Key;
+            FavoriteFilterHotKeyModifiers = descriptor.Value.Modifiers;
         });
     }
-
-    private static bool TryParseKeyGesture(string? hotkey, out Key key, out ModifierKeys modifiers)
-    {
-        key = Key.None;
-        modifiers = ModifierKeys.None;
-
-        if (string.IsNullOrWhiteSpace(hotkey))
-        {
-            return false;
-        }
-
-        try
-        {
-            var normalized = hotkey.Replace(" ", string.Empty);
-            var converter = new KeyGestureConverter();
-            if (converter.ConvertFromString(normalized) is KeyGesture gesture)
-            {
-                key = gesture.Key;
-                modifiers = gesture.Modifiers;
-                return true;
-            }
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-
-        return false;
-    }
-
-    public ICollectionView ClipboardItemsView =>
-        _clipboardItemsView ??= CollectionViewSource.GetDefaultView(ClipboardItems);
 
     private async Task LoadHistoryAsync()
     {
@@ -198,17 +166,16 @@ public partial class ClipboardViewModel : ObservableObject
 
             var items = await _clipboardHistoryUseCase.GetAllDescAsync();
 
-            var dispatcher = Application.Current?.Dispatcher;
-            if (dispatcher == null || dispatcher.CheckAccess())
+            if (_uiDispatcher.CheckAccess())
             {
                 MergeHistory(items);
             }
             else
             {
-                await dispatcher.InvokeAsync(() => MergeHistory(items), DispatcherPriority.Background);
+                await _uiDispatcher.InvokeAsync(() => MergeHistory(items), UiDispatcherPriority.Background);
             }
 
-            _logger.Information("加载剪贴板历史完成，共 {Count} 项", ClipboardItems.Count);
+            _logger.Information("加载剪贴板历史完成，共 {Count} 项", _allClipboardItems.Count);
         }
         catch (Exception ex)
         {
@@ -218,17 +185,18 @@ public partial class ClipboardViewModel : ObservableObject
 
     private void MergeHistory(IReadOnlyList<ClipboardItem> items)
     {
-        if (ClipboardItems.Count == 0)
+        if (_allClipboardItems.Count == 0)
         {
             foreach (var item in items)
             {
-                ClipboardItems.Add(_clipboardService.Create(item));
+                _allClipboardItems.Add(_clipboardService.Create(item));
             }
 
+            ReplaceVisibleItems(BuildVisibleItems());
             return;
         }
 
-        var existingIds = ClipboardItems
+        var existingIds = _allClipboardItems
             .Select(c => c.Value.Id)
             .Where(id => id > 0)
             .ToHashSet();
@@ -240,7 +208,12 @@ public partial class ClipboardViewModel : ObservableObject
                 continue;
             }
 
-            ClipboardItems.Add(_clipboardService.Create(item));
+            var content = _clipboardService.Create(item);
+            _allClipboardItems.Add(content);
+            if (IsVisible(content))
+            {
+                ClipboardItems.Add(content);
+            }
         }
     }
 
@@ -252,7 +225,7 @@ public partial class ClipboardViewModel : ObservableObject
             TryCompletePendingPaste(e.Payload, captureResult);
 
             // 检查是否是已存在的重复项（需要置顶）
-            var existingItem = ClipboardItems.FirstOrDefault(x => x.Value.Id == captureResult.Id);
+            var existingItem = _allClipboardItems.FirstOrDefault(x => x.Value.Id == captureResult.Id);
             if (existingItem != null)
             {
                 // 将已存在的重复项置顶
@@ -268,7 +241,11 @@ public partial class ClipboardViewModel : ObservableObject
 
             // 新内容，插入到列表顶部
             var clipItem = _clipboardService.Create(captureResult.Item);
-            ClipboardItems.Insert(0, clipItem);
+            _allClipboardItems.Insert(0, clipItem);
+            if (IsVisible(clipItem))
+            {
+                ClipboardItems.Insert(0, clipItem);
+            }
             _logger.Information("插入新项: {Content}", clipItem.Summary);
         }
         catch (Exception ex)
@@ -307,28 +284,14 @@ public partial class ClipboardViewModel : ObservableObject
         };
     }
 
-    /// <summary>
-    /// 过滤器
-    /// </summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    private bool Filter(object item)
+    private bool IsVisible(IClipboardContent item)
     {
-        if (item is not IClipboardContent clipboardContent)
+        if (IsFavoriteFilterEnabled && !item.IsFavorite)
+        {
             return false;
+        }
 
-        if (IsFavoriteFilterEnabled && !clipboardContent.IsFavorite)
-            return false;
-
-        return clipboardContent.IsVisible(_searchSnapshot);
-    }
-
-    partial void OnClipboardItemsChanged(
-        ObservableCollection<IClipboardContent>? oldValue,
-        ObservableCollection<IClipboardContent> newValue)
-    {
-        // 每次数据源改变时，都更新过滤后的视图
-        ClipboardItemsView.Filter = Filter;
+        return item.IsVisible(_searchSnapshot);
     }
 
     /// <summary>
@@ -368,7 +331,7 @@ public partial class ClipboardViewModel : ObservableObject
         _searchRefreshCts?.Dispose();
         var cts = new CancellationTokenSource();
         _searchRefreshCts = cts;
-        var itemCountSnapshot = ClipboardItems.Count;
+        var itemCountSnapshot = _allClipboardItems.Count;
 
         _ = Task.Run(async () =>
         {
@@ -380,9 +343,9 @@ public partial class ClipboardViewModel : ObservableObject
                 }
 
                 await Task.Delay(_searchDebounceInterval, cts.Token);
-                await Application.Current.Dispatcher.InvokeAsync(
+                await _uiDispatcher.InvokeAsync(
                     () => RefreshSearch(snapshot, reason),
-                    DispatcherPriority.Background,
+                    UiDispatcherPriority.Background,
                     cts.Token);
             }
             catch (OperationCanceledException)
@@ -407,17 +370,24 @@ public partial class ClipboardViewModel : ObservableObject
     private void RefreshSearch(SearchQuerySnapshot snapshot, string reason)
     {
         _searchSnapshot = snapshot;
-        ClipboardItemsView.Filter ??= Filter;
 
-        var totalCount = ClipboardItems.Count;
+        var totalCount = _allClipboardItems.Count;
         var stopwatch = Stopwatch.StartNew();
-        ClipboardItemsView.Refresh();
+        var visibleItems = BuildVisibleItems();
+        ReplaceVisibleItems(visibleItems);
         stopwatch.Stop();
 
-        if (!_enableSearchDiagnostics)
-            return;
+        if (SelectedItem != null && !ClipboardItems.Contains(SelectedItem))
+        {
+            SelectedItem = ClipboardItems.FirstOrDefault();
+        }
 
-        var hitCount = ClipboardItemsView.Cast<object>().Count();
+        if (!_enableSearchDiagnostics)
+        {
+            return;
+        }
+
+        var hitCount = visibleItems.Count;
         var elapsedMs = stopwatch.ElapsedMilliseconds;
         var queryPreview = snapshot.HasQuery
             ? (snapshot.Normalized.Length > 60 ? string.Concat(snapshot.Normalized.AsSpan(0, 60), "...") : snapshot.Normalized)
@@ -437,6 +407,42 @@ public partial class ClipboardViewModel : ObservableObject
         }
     }
 
+    private List<IClipboardContent> BuildVisibleItems()
+    {
+        List<IClipboardContent> visible = new();
+
+        foreach (var item in _allClipboardItems)
+        {
+            if (IsVisible(item))
+            {
+                visible.Add(item);
+            }
+        }
+
+        return visible;
+    }
+
+    private void ReplaceVisibleItems(IReadOnlyList<IClipboardContent> items)
+    {
+        ClipboardItems.Clear();
+        foreach (var item in items)
+        {
+            ClipboardItems.Add(item);
+        }
+    }
+
+    // 仅供测试注入初始数据，避免绕过内部集合状态
+    internal void SeedItemsForTest(IEnumerable<IClipboardContent> items)
+    {
+        _allClipboardItems.Clear();
+        foreach (var item in items)
+        {
+            _allClipboardItems.Add(item);
+        }
+
+        ReplaceVisibleItems(BuildVisibleItems());
+    }
+
     /// <summary>
     /// 置顶
     /// </summary>
@@ -446,7 +452,9 @@ public partial class ClipboardViewModel : ObservableObject
     private async Task MoveToTopAsync(IClipboardContent? item)
     {
         if (item == null)
+        {
             return;
+        }
 
         try
         {
@@ -467,7 +475,9 @@ public partial class ClipboardViewModel : ObservableObject
     private async Task CopyAsync(IClipboardContent? item)
     {
         if (item == null)
+        {
             return;
+        }
 
         try
         {
@@ -489,7 +499,9 @@ public partial class ClipboardViewModel : ObservableObject
     private async Task PasteAsync(IClipboardContent? item)
     {
         if (item == null)
+        {
             return;
+        }
 
         PendingPaste? pending = null;
         try
@@ -507,7 +519,9 @@ public partial class ClipboardViewModel : ObservableObject
 
             // 不是第一个则删除
             if (ClipboardItems.IndexOf(item) > 0 && !item.IsFavorite)
+            {
                 await DeleteAsync(item);
+            }
         }
         catch (Exception ex)
         {
@@ -532,7 +546,9 @@ public partial class ClipboardViewModel : ObservableObject
     private async Task ToggleFavoriteAsync(IClipboardContent? item)
     {
         if (item == null)
+        {
             return;
+        }
 
         var nextValue = !item.IsFavorite;
         item.IsFavorite = nextValue;
@@ -550,21 +566,36 @@ public partial class ClipboardViewModel : ObservableObject
     private async Task DeleteAsync(IClipboardContent? item)
     {
         if (item == null)
+        {
             return;
+        }
 
         await _clipboardHistoryUseCase.DeleteAsync(item.Value);
-        int index = ClipboardItems.IndexOf(item);
-        if (index < 0 || index >= ClipboardItems.Count)
-            return;
-
-        ClipboardItems.RemoveAt(index);
+        var visibleIndex = ClipboardItems.IndexOf(item);
+        RemoveFromCollections(item);
         _logger.Information("删除项: {Content}", item.Summary);
 
         // 设置新的选中项：删除后选中前一项，如果删除的是第一项则选中新的第一项
         if (ClipboardItems.Count > 0)
         {
-            int newSelectedIndex = index > 0 ? index - 1 : 0;
+            var newSelectedIndex = visibleIndex > 0 ? visibleIndex - 1 : 0;
+            newSelectedIndex = Math.Clamp(newSelectedIndex, 0, ClipboardItems.Count - 1);
             SelectedItem = ClipboardItems[newSelectedIndex];
+        }
+    }
+
+    private void RemoveFromCollections(IClipboardContent item)
+    {
+        var allIndex = _allClipboardItems.IndexOf(item);
+        if (allIndex >= 0)
+        {
+            _allClipboardItems.RemoveAt(allIndex);
+        }
+
+        var visibleIndex = ClipboardItems.IndexOf(item);
+        if (visibleIndex >= 0)
+        {
+            ClipboardItems.RemoveAt(visibleIndex);
         }
     }
 
@@ -573,9 +604,9 @@ public partial class ClipboardViewModel : ObservableObject
     /// </summary>
     public void OnWindowShown()
     {
-        if (ClipboardItemsView is ListCollectionView view && view.Count > 0)
+        if (ClipboardItems.Count > 0)
         {
-            SelectedItem = view.GetItemAt(0) as IClipboardContent;
+            SelectedItem = ClipboardItems[0];
             ScrollToSelectedRequested?.Invoke(this, EventArgs.Empty);
             _logger.Debug("窗口已显示，已选中第一个项目");
         }
@@ -583,25 +614,25 @@ public partial class ClipboardViewModel : ObservableObject
 
     public void SelectRelative(int delta)
     {
-        if (ClipboardItemsView is not ListCollectionView view || view.Count <= 0)
+        if (ClipboardItems.Count <= 0)
         {
             return;
         }
 
-        var currentIndex = SelectedItem == null ? -1 : view.IndexOf(SelectedItem);
+        var currentIndex = SelectedItem == null ? -1 : ClipboardItems.IndexOf(SelectedItem);
         if (currentIndex < 0)
         {
-            SelectedItem = view.GetItemAt(0) as IClipboardContent;
+            SelectedItem = ClipboardItems[0];
             return;
         }
 
-        var nextIndex = Math.Clamp(currentIndex + delta, 0, view.Count - 1);
+        var nextIndex = Math.Clamp(currentIndex + delta, 0, ClipboardItems.Count - 1);
         if (nextIndex == currentIndex)
         {
             return;
         }
 
-        SelectedItem = view.GetItemAt(nextIndex) as IClipboardContent;
+        SelectedItem = ClipboardItems[nextIndex];
         ScrollToSelectedRequested?.Invoke(this, EventArgs.Empty);
     }
 
@@ -660,18 +691,24 @@ public partial class ClipboardViewModel : ObservableObject
         {
             case ClipboardPayloadType.Text:
                 if (item.ContentType != ClipboardContentTypes.Text || payload.Text == null)
+                {
                     return false;
+                }
                 return item.Content.SequenceEqual(Encoding.UTF8.GetBytes(payload.Text));
 
             case ClipboardPayloadType.FileDropList:
                 if (item.ContentType != ClipboardContentTypes.FileDropList || payload.FilePaths == null)
+                {
                     return false;
+                }
                 var json = JsonSerializer.Serialize(payload.FilePaths);
                 return item.Content.SequenceEqual(Encoding.UTF8.GetBytes(json));
 
             case ClipboardPayloadType.ImagePng:
                 if (item.ContentType != ClipboardContentTypes.Image || payload.ImagePngBytes == null)
+                {
                     return false;
+                }
                 return item.Content.SequenceEqual(payload.ImagePngBytes);
 
             default:
@@ -681,21 +718,32 @@ public partial class ClipboardViewModel : ObservableObject
 
     private async Task MoveItemToTopAsync(IClipboardContent item, string logAction)
     {
-        var index = ClipboardItems.IndexOf(item);
-        if (index < 0)
+        var allIndex = _allClipboardItems.IndexOf(item);
+        if (allIndex < 0)
         {
             return;
         }
 
-        if (index == 0)
+        if (allIndex == 0)
         {
             SelectedItem = item;
             _logger.Information("{Action}：{Content}", logAction, item.Summary);
             return;
         }
 
-        ClipboardItems.RemoveAt(index);
-        ClipboardItems.Insert(0, item);
+        _allClipboardItems.RemoveAt(allIndex);
+        _allClipboardItems.Insert(0, item);
+
+        if (IsVisible(item))
+        {
+            var visibleIndex = ClipboardItems.IndexOf(item);
+            if (visibleIndex >= 0)
+            {
+                ClipboardItems.RemoveAt(visibleIndex);
+            }
+            ClipboardItems.Insert(0, item);
+        }
+
         item.Value.CreatedAt = DateTime.Now;
         await _clipboardHistoryUseCase.UpdateAsync(item.Value);
         SelectedItem = item;

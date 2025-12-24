@@ -4,7 +4,6 @@
     所有项目应从此文件继承包版本，而不是在各项目文件中单独指定版本
     更新包版本时，只需在此文件中更新即可
   -->
-
   <!-- MVVM 和 UI 框架 -->
   <ItemGroup>
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
@@ -13,35 +12,33 @@
     <PackageVersion Include="Prism.Core" Version="9.0.537" />
     <PackageVersion Include="Prism.DryIoc" Version="9.0.537" />
     <PackageVersion Include="Prism.Wpf" Version="9.0.537" />
+    <PackageVersion Include="Avalonia" Version="11.3.10" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.10" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.10" />
   </ItemGroup>
-
   <!-- 数据访问 -->
   <ItemGroup>
     <PackageVersion Include="Dapper" Version="2.1.66" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="9.0.0" />
   </ItemGroup>
-
   <!-- 配置管理和依赖注入 -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
   </ItemGroup>
-
   <!-- 日志和监控 -->
   <ItemGroup>
     <PackageVersion Include="Serilog" Version="4.3.0" />
     <PackageVersion Include="Serilog.Sinks.Debug" Version="3.0.0" />
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0" />
   </ItemGroup>
-
   <!-- 系统交互 -->
   <ItemGroup>
     <PackageVersion Include="NHotkey.Wpf" Version="3.0.0" />
     <PackageVersion Include="SharpHook" Version="7.1.0" />
   </ItemGroup>
-
   <!-- 测试框架 -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
@@ -49,5 +46,4 @@
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
-
 </Project>

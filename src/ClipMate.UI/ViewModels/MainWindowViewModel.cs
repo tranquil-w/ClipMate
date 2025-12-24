@@ -1,6 +1,6 @@
+using ClipMate.Platform.Abstractions.Window;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Windows;
 
 namespace ClipMate.ViewModels;
 
@@ -9,12 +9,19 @@ namespace ClipMate.ViewModels;
 /// </summary>
 public partial class MainWindowViewModel : ObservableObject
 {
+    private readonly IMainWindowController _mainWindowController;
+
+    public MainWindowViewModel(IMainWindowController mainWindowController)
+    {
+        _mainWindowController = mainWindowController;
+    }
+
     /// <summary>
     /// 关闭窗口命令（处理Escape键）
     /// </summary>
     [RelayCommand]
     private void CloseWindow()
     {
-        Application.Current.MainWindow?.Close();
+        _mainWindowController.CloseMainWindow();
     }
 }

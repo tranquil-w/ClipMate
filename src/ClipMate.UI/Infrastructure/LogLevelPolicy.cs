@@ -3,7 +3,7 @@ using Serilog.Events;
 
 namespace ClipMate.Infrastructure
 {
-    internal static class LogLevelPolicy
+    public static class LogLevelPolicy
     {
         private static readonly HashSet<LogEventLevel> _supportedLevels = new()
         {

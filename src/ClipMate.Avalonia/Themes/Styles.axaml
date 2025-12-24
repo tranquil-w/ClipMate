@@ -1,0 +1,90 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Styles.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+          <Color x:Key="ClipMateBackgroundColor">#F6F4EF</Color>
+          <Color x:Key="ClipMateSurfaceColor">#FFFFFF</Color>
+          <Color x:Key="ClipMateBorderColor">#D9D3C8</Color>
+          <Color x:Key="ClipMateAccentColor">#E07A5F</Color>
+          <Color x:Key="ClipMateTextColor">#2B2A28</Color>
+          <Color x:Key="ClipMateMutedTextColor">#6B6760</Color>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+          <Color x:Key="ClipMateBackgroundColor">#1B1A18</Color>
+          <Color x:Key="ClipMateSurfaceColor">#24221F</Color>
+          <Color x:Key="ClipMateBorderColor">#3A3733</Color>
+          <Color x:Key="ClipMateAccentColor">#F2A65A</Color>
+          <Color x:Key="ClipMateTextColor">#F5F2EB</Color>
+          <Color x:Key="ClipMateMutedTextColor">#C0BAAE</Color>
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+
+      <SolidColorBrush x:Key="ClipMateBackgroundBrush" Color="{DynamicResource ClipMateBackgroundColor}" />
+      <SolidColorBrush x:Key="ClipMateSurfaceBrush" Color="{DynamicResource ClipMateSurfaceColor}" />
+      <SolidColorBrush x:Key="ClipMateBorderBrush" Color="{DynamicResource ClipMateBorderColor}" />
+      <SolidColorBrush x:Key="ClipMateAccentBrush" Color="{DynamicResource ClipMateAccentColor}" />
+      <SolidColorBrush x:Key="ClipMateTextBrush" Color="{DynamicResource ClipMateTextColor}" />
+      <SolidColorBrush x:Key="ClipMateMutedTextBrush" Color="{DynamicResource ClipMateMutedTextColor}" />
+    </ResourceDictionary>
+  </Styles.Resources>
+
+  <Style Selector="Window">
+    <Setter Property="Background" Value="{DynamicResource ClipMateBackgroundBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource ClipMateTextBrush}" />
+    <Setter Property="FontFamily" Value="Microsoft YaHei UI" />
+  </Style>
+
+  <Style Selector="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource ClipMateTextBrush}" />
+  </Style>
+
+  <Style Selector="TextBox">
+    <Setter Property="Background" Value="{DynamicResource ClipMateSurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource ClipMateBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="8" />
+  </Style>
+
+  <Style Selector="Button">
+    <Setter Property="Background" Value="{DynamicResource ClipMateAccentBrush}" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="Padding" Value="10,6" />
+    <Setter Property="CornerRadius" Value="6" />
+  </Style>
+
+  <Style Selector="Button.secondary">
+    <Setter Property="Background" Value="{DynamicResource ClipMateSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource ClipMateTextBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource ClipMateBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+  </Style>
+
+  <Style Selector="ToggleButton.clipmate-toggle">
+    <Setter Property="Background" Value="{DynamicResource ClipMateSurfaceBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource ClipMateMutedTextBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource ClipMateBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+
+  <Style Selector="ToggleButton.clipmate-toggle:checked">
+    <Setter Property="Background" Value="{DynamicResource ClipMateAccentBrush}" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="BorderBrush" Value="{DynamicResource ClipMateAccentBrush}" />
+  </Style>
+
+  <Style Selector="ListBoxItem">
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
+  <Style Selector="ListBoxItem:selected">
+    <Setter Property="Background" Value="{DynamicResource ClipMateBorderBrush}" />
+  </Style>
+</Styles>

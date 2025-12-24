@@ -12,4 +12,6 @@
   <Project Path="src/ClipMate.Service.Tests/ClipMate.Service.Tests.csproj" />
   <Project Path="src/ClipMate.Platform.Windows/ClipMate.Platform.Windows.csproj" />
   <Project Path="src/ClipMate/ClipMate.csproj" />
+  <Project Path="src/ClipMate.UI/ClipMate.UI.csproj" />
+  <Project Path="src/ClipMate.Avalonia/ClipMate.Avalonia.csproj" />
 </Solution>

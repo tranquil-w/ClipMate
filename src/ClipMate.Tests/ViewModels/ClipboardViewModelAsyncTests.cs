@@ -40,7 +40,13 @@ public sealed class ClipboardViewModelAsyncTests : TestBase
             _captureUseCaseMock.Object,
             _historyUseCaseMock.Object,
             _settingsMock.Object,
+            new ImmediateUiDispatcher(),
             _loggerMock.Object);
+    }
+
+    private static void SeedItems(ClipboardViewModel viewModel, params IClipboardContent[] items)
+    {
+        viewModel.SeedItemsForTest(items.ToList());
     }
 
     [Fact]
@@ -87,7 +93,7 @@ public sealed class ClipboardViewModelAsyncTests : TestBase
             CreatedAt = DateTime.UtcNow,
             IsFavorite = false
         };
-        viewModel.ClipboardItems.Add(_clipboardMock.Object.Create(existingItem));
+        SeedItems(viewModel, _clipboardMock.Object.Create(existingItem));
 
         var historyItems = new[]
         {

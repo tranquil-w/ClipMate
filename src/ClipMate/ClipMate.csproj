@@ -20,11 +20,12 @@
     <Resource Include="ClipMate.ico" />
   </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\ClipMate.Core\ClipMate.Core.csproj" />
-        <ProjectReference Include="..\ClipMate.Platform.Windows\ClipMate.Platform.Windows.csproj" />
-        <ProjectReference Include="..\ClipMate.Service\ClipMate.Service.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClipMate.Core\ClipMate.Core.csproj" />
+    <ProjectReference Include="..\ClipMate.UI\ClipMate.UI.csproj" />
+    <ProjectReference Include="..\ClipMate.Platform.Windows\ClipMate.Platform.Windows.csproj" />
+    <ProjectReference Include="..\ClipMate.Service\ClipMate.Service.csproj" />
+  </ItemGroup>
 
     <!-- 包引用 - 版本已通过 Directory.Packages.props 统一管理 -->
     <ItemGroup>

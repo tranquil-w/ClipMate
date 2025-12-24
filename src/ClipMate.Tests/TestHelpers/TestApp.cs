@@ -1,4 +1,5 @@
 using ClipMate.Service.Interfaces;
+using ClipMate.UI.Abstractions;
 using ClipMate.Platform.Abstractions.Clipboard;
 using ClipMate.Services;
 using ClipMate.Service.Clipboard;
@@ -79,6 +80,8 @@ public class TestApp : PrismApplication
         containerRegistry.RegisterSingleton<IClipboardCaptureUseCase, ClipboardCaptureUseCase>();
         containerRegistry.RegisterSingleton<IClipboardHistoryUseCase, ClipboardHistoryUseCase>();
         containerRegistry.RegisterSingleton<IClipboardPasteUseCase, ClipboardPasteUseCase>();
+        containerRegistry.RegisterSingleton<IUiDispatcher, ImmediateUiDispatcher>();
+        containerRegistry.RegisterSingleton<IUserDialogService, FakeUserDialogService>();
 
         //// Register views with regions
         //var regionManager = containerRegistry.GetContainer().Resolve<IRegionManager>();
