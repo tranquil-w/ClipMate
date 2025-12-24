@@ -81,14 +81,14 @@ public sealed class PasteTargetWindowService(IForegroundWindowTracker foreground
 
         try
         {
-            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            timeoutCts.CancelAfter(timeout);
+            var delayTask = Task.Delay(timeout, cancellationToken);
+            var completed = await Task.WhenAny(tcs.Task, delayTask);
 
-            var readyForeground = await tcs.Task.WaitAsync(timeoutCts.Token);
-            return (true, readyForeground);
-        }
-        catch (OperationCanceledException)
-        {
+            if (completed == tcs.Task && tcs.Task.IsCompletedSuccessfully)
+            {
+                return (true, tcs.Task.Result);
+            }
+
             return (false, _foregroundWindowTracker.CurrentForegroundWindowHandle);
         }
         finally

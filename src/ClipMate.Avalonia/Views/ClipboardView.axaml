@@ -4,8 +4,8 @@
     xmlns:local="clr-namespace:ClipMate.Avalonia.Views"
     x:Class="ClipMate.Avalonia.Views.ClipboardView">
   <DockPanel LastChildFill="True">
-    <Border DockPanel.Dock="Bottom" Margin="3">
-      <Grid ColumnDefinitions="*,Auto">
+    <Border DockPanel.Dock="Bottom" Margin="3" Padding="4,0,3,0">
+      <Grid ColumnDefinitions="*,4,Auto">
         <Grid Grid.Column="0">
           <TextBox
             x:Name="SearchBox"
@@ -22,10 +22,9 @@
             IsVisible="{Binding SearchQuery, Converter={StaticResource StringNullOrEmptyConverter}}" />
         </Grid>
         <ToggleButton
-          Grid.Column="1"
+          Grid.Column="2"
           Width="36"
           Height="36"
-          Margin="6,0,0,0"
           Classes="clipmate-toggle"
           IsChecked="{Binding IsFavoriteFilterEnabled}"
           ToolTip.Tip="仅显示收藏">
@@ -43,7 +42,10 @@
       Margin="3"
       ItemsSource="{Binding ClipboardItems}"
       SelectedItem="{Binding SelectedItem}"
+      ItemContainerTheme="{StaticResource ClipMateListBoxItemTheme}"
       KeyDown="ListBox_KeyDown"
+      Background="Transparent"
+      BorderThickness="0"
       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
       ScrollViewer.VerticalScrollBarVisibility="Auto">
       <ListBox.ContextMenu>
@@ -56,12 +58,12 @@
             Header="收藏"
             Command="{Binding ToggleFavoriteCommand}"
             CommandParameter="{Binding SelectedItem}"
-            IsVisible="{Binding SelectedItem.IsFavorite, Converter={StaticResource InverseBooleanConverter}}" />
+            IsVisible="{Binding SelectedItem, Converter={StaticResource SelectedItemFavoriteConverter}, ConverterParameter=Invert}" />
           <MenuItem
             Header="取消收藏"
             Command="{Binding ToggleFavoriteCommand}"
             CommandParameter="{Binding SelectedItem}"
-            IsVisible="{Binding SelectedItem.IsFavorite}" />
+            IsVisible="{Binding SelectedItem, Converter={StaticResource SelectedItemFavoriteConverter}}" />
           <Separator />
           <MenuItem
             Header="复制"

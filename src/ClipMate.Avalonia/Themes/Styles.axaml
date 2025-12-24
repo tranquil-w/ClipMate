@@ -5,20 +5,30 @@
     <ResourceDictionary>
       <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
-          <Color x:Key="ClipMateBackgroundColor">#E6F6F4EF</Color>
+          <Color x:Key="ClipMateBackgroundColor">#FFD6DEDF</Color>
           <Color x:Key="ClipMateSurfaceColor">#FFFFFF</Color>
           <Color x:Key="ClipMateBorderColor">#D9D3C8</Color>
           <Color x:Key="ClipMateAccentColor">#E07A5F</Color>
           <Color x:Key="ClipMateTextColor">#2B2A28</Color>
           <Color x:Key="ClipMateMutedTextColor">#6B6760</Color>
+          <Color x:Key="ClipMateOverlayBackgroundColor">#66F6F4EF</Color>
+          <Color x:Key="ClipMateItemSurfaceColor">#FFF3F5F7</Color>
+          <Color x:Key="ClipMateItemBorderColor">#33000000</Color>
+          <Color x:Key="ClipMateItemHoverColor">#E4EAED</Color>
+          <Color x:Key="ClipMateItemSelectedColor">#D6E0E3</Color>
         </ResourceDictionary>
         <ResourceDictionary x:Key="Dark">
-          <Color x:Key="ClipMateBackgroundColor">#E61B1A18</Color>
+          <Color x:Key="ClipMateBackgroundColor">#FF232526</Color>
           <Color x:Key="ClipMateSurfaceColor">#24221F</Color>
           <Color x:Key="ClipMateBorderColor">#3A3733</Color>
           <Color x:Key="ClipMateAccentColor">#F2A65A</Color>
           <Color x:Key="ClipMateTextColor">#F5F2EB</Color>
           <Color x:Key="ClipMateMutedTextColor">#C0BAAE</Color>
+          <Color x:Key="ClipMateOverlayBackgroundColor">#66232526</Color>
+          <Color x:Key="ClipMateItemSurfaceColor">#CC303030</Color>
+          <Color x:Key="ClipMateItemBorderColor">#66FFFFFF</Color>
+          <Color x:Key="ClipMateItemHoverColor">#B33A3D3F</Color>
+          <Color x:Key="ClipMateItemSelectedColor">#CC2E3133</Color>
         </ResourceDictionary>
       </ResourceDictionary.ThemeDictionaries>
 
@@ -28,6 +38,29 @@
       <SolidColorBrush x:Key="ClipMateAccentBrush" Color="{DynamicResource ClipMateAccentColor}" />
       <SolidColorBrush x:Key="ClipMateTextBrush" Color="{DynamicResource ClipMateTextColor}" />
       <SolidColorBrush x:Key="ClipMateMutedTextBrush" Color="{DynamicResource ClipMateMutedTextColor}" />
+      <SolidColorBrush x:Key="ClipMateOverlayBackgroundBrush" Color="{DynamicResource ClipMateOverlayBackgroundColor}" />
+      <SolidColorBrush x:Key="ClipMateItemSurfaceBrush" Color="{DynamicResource ClipMateItemSurfaceColor}" />
+      <SolidColorBrush x:Key="ClipMateItemBorderBrush" Color="{DynamicResource ClipMateItemBorderColor}" />
+      <SolidColorBrush x:Key="ClipMateItemHoverBrush" Color="{DynamicResource ClipMateItemHoverColor}" />
+      <SolidColorBrush x:Key="ClipMateItemSelectedBrush" Color="{DynamicResource ClipMateItemSelectedColor}" />
+
+      <ControlTheme x:Key="ClipMateListBoxItemTheme" TargetType="ListBoxItem">
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+          <ControlTemplate>
+            <ContentPresenter
+              Name="PART_ContentPresenter"
+              Content="{TemplateBinding Content}"
+              ContentTemplate="{TemplateBinding ContentTemplate}"
+              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+          </ControlTemplate>
+        </Setter>
+      </ControlTheme>
     </ResourceDictionary>
   </Styles.Resources>
 
@@ -94,9 +127,57 @@
     <Setter Property="Margin" Value="0" />
     <Setter Property="Padding" Value="0" />
     <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <ContentPresenter
+          Name="PART_ContentPresenter"
+          Content="{TemplateBinding Content}"
+          ContentTemplate="{TemplateBinding ContentTemplate}"
+          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+      </ControlTemplate>
+    </Setter>
+  </Style>
+
+  <Style Selector="ListBoxItem:pointerover">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
   </Style>
 
   <Style Selector="ListBoxItem:selected">
-    <Setter Property="Background" Value="{DynamicResource ClipMateBorderBrush}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
+
+  <Style Selector="ListBoxItem:selected:inactive">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
+
+  <Style Selector="ListBoxItem:selected:pointerover">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
+
+  <Style Selector="ListBoxItem:pressed">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
+
+  <Style Selector="Border.clipmate-item">
+    <Setter Property="Background" Value="{DynamicResource ClipMateItemSurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="2" />
+  </Style>
+
+  <Style Selector="ListBoxItem:pointerover Border.clipmate-item">
+    <Setter Property="Background" Value="{DynamicResource ClipMateItemHoverBrush}" />
+  </Style>
+
+  <Style Selector="ListBoxItem:selected Border.clipmate-item">
+    <Setter Property="Background" Value="{DynamicResource ClipMateItemSelectedBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource ClipMateItemBorderBrush}" />
   </Style>
 </Styles>

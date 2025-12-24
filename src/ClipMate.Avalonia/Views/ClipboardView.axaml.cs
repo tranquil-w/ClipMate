@@ -162,11 +162,13 @@ public partial class ClipboardView : UserControl
         {
             if (viewModel.SelectedItem != null)
             {
+                ResumeNoActivate();
                 viewModel.PasteCommand.Execute(viewModel.SelectedItem);
                 e.Handled = true;
             }
         }
     }
+
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
@@ -280,6 +282,7 @@ public partial class ClipboardView : UserControl
 
         if (DataContext is ClipboardViewModel viewModel && viewModel.SelectedItem != null)
         {
+            ResumeNoActivate();
             viewModel.PasteCommand.Execute(viewModel.SelectedItem);
             e.Handled = true;
         }

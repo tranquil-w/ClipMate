@@ -3,4 +3,5 @@
                     xmlns:conv="clr-namespace:ClipMate.Avalonia.Converters">
   <conv:InverseBooleanConverter x:Key="InverseBooleanConverter" />
   <conv:StringNullOrEmptyConverter x:Key="StringNullOrEmptyConverter" />
+  <conv:SelectedItemFavoriteConverter x:Key="SelectedItemFavoriteConverter" />
 </ResourceDictionary>
