@@ -304,7 +304,7 @@ public partial class ClipboardViewModel : ObservableObject
 
     partial void OnIsFavoriteFilterEnabledChanged(bool value)
     {
-        ScheduleSearchRefresh("favorite-filter-changed", force: true);
+        ScheduleSearchRefresh("favorite-filter-changed", force: true, immediate: true);
     }
 
     [RelayCommand]
@@ -319,7 +319,7 @@ public partial class ClipboardViewModel : ObservableObject
         ScheduleSearchRefresh("search-command", force: true);
     }
 
-    private void ScheduleSearchRefresh(string reason, bool force = false)
+    private void ScheduleSearchRefresh(string reason, bool force = false, bool immediate = false)
     {
         var snapshot = SearchQuerySnapshot.From(SearchQuery);
         if (!force && snapshot == _searchSnapshot)
@@ -332,20 +332,24 @@ public partial class ClipboardViewModel : ObservableObject
         var cts = new CancellationTokenSource();
         _searchRefreshCts = cts;
         var itemCountSnapshot = _allClipboardItems.Count;
+        var dispatcherPriority = immediate ? UiDispatcherPriority.Normal : UiDispatcherPriority.Background;
 
         _ = Task.Run(async () =>
         {
             try
             {
-                if (itemCountSnapshot > _largeListThreshold)
+                if (!immediate && itemCountSnapshot > _largeListThreshold)
                 {
                     await Task.Delay(_largeListDelay, cts.Token);
                 }
 
-                await Task.Delay(_searchDebounceInterval, cts.Token);
+                if (!immediate)
+                {
+                    await Task.Delay(_searchDebounceInterval, cts.Token);
+                }
                 await _uiDispatcher.InvokeAsync(
                     () => RefreshSearch(snapshot, reason),
-                    UiDispatcherPriority.Background,
+                    dispatcherPriority,
                     cts.Token);
             }
             catch (OperationCanceledException)
@@ -554,7 +558,7 @@ public partial class ClipboardViewModel : ObservableObject
         item.IsFavorite = nextValue;
         await _clipboardHistoryUseCase.UpdateFavoriteAsync(item.Value.Id, nextValue);
         OnPropertyChanged(nameof(SelectedItem));
-        ScheduleSearchRefresh("favorite-toggled", force: true);
+        ScheduleSearchRefresh("favorite-toggled", force: true, immediate: true);
     }
 
     /// <summary>
