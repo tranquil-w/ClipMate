@@ -94,9 +94,19 @@ namespace ClipMate.Service.Interfaces
         int GetClipboardItemMaxHeight();
 
         /// <summary>
+        /// 获取剪贴项最小高度
+        /// </summary>
+        int GetClipboardItemMinHeight();
+
+        /// <summary>
         /// 设置剪贴项最大高度
         /// </summary>
         void SetClipboardItemMaxHeight(int height);
+
+        /// <summary>
+        /// 设置剪贴项最小高度
+        /// </summary>
+        void SetClipboardItemMinHeight(int height);
 
         /// <summary>
         /// 获取窗口显示位置

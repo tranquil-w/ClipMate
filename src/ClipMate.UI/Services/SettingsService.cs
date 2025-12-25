@@ -200,13 +200,52 @@ namespace ClipMate.Services
             return _settings.ClipboardItemMaxHeight;
         }
 
+        public int GetClipboardItemMinHeight()
+        {
+            return _settings.ClipboardItemMinHeight;
+        }
+
         public void SetClipboardItemMaxHeight(int height)
         {
-            var oldValue = _settings.ClipboardItemMaxHeight;
-            if (oldValue != height)
+            var oldMax = _settings.ClipboardItemMaxHeight;
+            var oldMin = _settings.ClipboardItemMinHeight;
+
+            _settings.ClipboardItemMaxHeight = height;
+            if (_settings.ClipboardItemMinHeight > height)
+            {
+                _settings.ClipboardItemMinHeight = height;
+            }
+
+            if (oldMax != _settings.ClipboardItemMaxHeight)
+            {
+                WeakReferenceMessenger.Default.Send(new ClipboardItemMaxHeightChangedMessage(_settings.ClipboardItemMaxHeight));
+            }
+
+            if (oldMin != _settings.ClipboardItemMinHeight)
+            {
+                WeakReferenceMessenger.Default.Send(new ClipboardItemMinHeightChangedMessage(_settings.ClipboardItemMinHeight));
+            }
+        }
+
+        public void SetClipboardItemMinHeight(int height)
+        {
+            var oldMin = _settings.ClipboardItemMinHeight;
+            var oldMax = _settings.ClipboardItemMaxHeight;
+
+            _settings.ClipboardItemMinHeight = height;
+            if (_settings.ClipboardItemMaxHeight < height)
             {
                 _settings.ClipboardItemMaxHeight = height;
-                WeakReferenceMessenger.Default.Send(new ClipboardItemMaxHeightChangedMessage(height));
+            }
+
+            if (oldMin != _settings.ClipboardItemMinHeight)
+            {
+                WeakReferenceMessenger.Default.Send(new ClipboardItemMinHeightChangedMessage(_settings.ClipboardItemMinHeight));
+            }
+
+            if (oldMax != _settings.ClipboardItemMaxHeight)
+            {
+                WeakReferenceMessenger.Default.Send(new ClipboardItemMaxHeightChangedMessage(_settings.ClipboardItemMaxHeight));
             }
         }
 
@@ -348,6 +387,12 @@ namespace ClipMate.Services
                 defaults.ClipboardItemMaxHeight = clipboardItemMaxHeight.Value;
             }
 
+            var clipboardItemMinHeight = _configuration.GetValue<int?>("ClipboardItemMinHeight");
+            if (clipboardItemMinHeight.HasValue && clipboardItemMinHeight.Value > 0)
+            {
+                defaults.ClipboardItemMinHeight = clipboardItemMinHeight.Value;
+            }
+
             var configuredWindowPosition = _configuration["WindowPosition"];
             if (!string.IsNullOrWhiteSpace(configuredWindowPosition) &&
                 Enum.TryParse<WindowPosition>(configuredWindowPosition, true, out var windowPosition) &&
@@ -422,6 +467,11 @@ namespace ClipMate.Services
                 target.ClipboardItemMaxHeight = overrides.ClipboardItemMaxHeight;
             }
 
+            if (overrides.ClipboardItemMinHeight > 0)
+            {
+                target.ClipboardItemMinHeight = overrides.ClipboardItemMinHeight;
+            }
+
             if (Enum.IsDefined(typeof(WindowPosition), overrides.WindowPosition))
             {
                 target.WindowPosition = overrides.WindowPosition;
@@ -494,8 +544,26 @@ namespace ClipMate.Services
                 }
                 else
                 {
-                    settings.ClipboardItemMaxHeight = 100;
+                    settings.ClipboardItemMaxHeight = 56;
                 }
+            }
+
+            if (settings.ClipboardItemMinHeight <= 0)
+            {
+                var clipboardItemMinHeight = configuration.GetValue<int?>("ClipboardItemMinHeight");
+                if (clipboardItemMinHeight.HasValue && clipboardItemMinHeight.Value > 0)
+                {
+                    settings.ClipboardItemMinHeight = clipboardItemMinHeight.Value;
+                }
+                else
+                {
+                    settings.ClipboardItemMinHeight = 56;
+                }
+            }
+
+            if (settings.ClipboardItemMinHeight > settings.ClipboardItemMaxHeight)
+            {
+                settings.ClipboardItemMaxHeight = settings.ClipboardItemMinHeight;
             }
 
             if (!Enum.IsDefined(typeof(WindowPosition), settings.WindowPosition))
@@ -566,6 +634,7 @@ namespace ClipMate.Services
         public bool AlwaysRunAsAdmin { get; set; }
         public int HistoryLimit { get; set; }
         public int ClipboardItemMaxHeight { get; set; }
+        public int ClipboardItemMinHeight { get; set; }
         public WindowPosition WindowPosition { get; set; }
         public LogEventLevel LogLevel { get; set; }
         public ConnectionStrings? ConnectionStrings { get; set; }

@@ -46,7 +46,10 @@ public partial class ClipboardViewModel : ObservableObject
     private KeyModifiers _favoriteFilterHotKeyModifiers = KeyModifiers.Ctrl;
 
     [ObservableProperty]
-    private int _clipboardItemMaxHeight = 100;
+    private int _clipboardItemMaxHeight = 56;
+
+    [ObservableProperty]
+    private int _clipboardItemMinHeight = 56;
 
     [ObservableProperty]
     private bool _imeHintsEnabled = true;
@@ -100,6 +103,7 @@ public partial class ClipboardViewModel : ObservableObject
 
         // 初始化剪贴项最大高度设置
         ClipboardItemMaxHeight = _settingsService.GetClipboardItemMaxHeight();
+        ClipboardItemMinHeight = _settingsService.GetClipboardItemMinHeight();
         ImeHintsEnabled = _settingsService.GetImeHintsEnabled();
         UpdateFavoriteFilterHotkeyBinding(_settingsService.GetFavoriteFilterHotKey());
 
@@ -107,6 +111,11 @@ public partial class ClipboardViewModel : ObservableObject
         WeakReferenceMessenger.Default.Register<ClipboardItemMaxHeightChangedMessage>(this, (recipient, message) =>
         {
             HandleClipboardItemMaxHeightChanged(message.Value);
+        });
+
+        WeakReferenceMessenger.Default.Register<ClipboardItemMinHeightChangedMessage>(this, (recipient, message) =>
+        {
+            HandleClipboardItemMinHeightChanged(message.Value);
         });
 
         WeakReferenceMessenger.Default.Register<ImeHintsEnabledChangedMessage>(this, (_, message) =>
@@ -140,6 +149,15 @@ public partial class ClipboardViewModel : ObservableObject
         {
             ClipboardItemMaxHeight = newHeight;
             _logger.Information("剪贴项最大高度已更新: {Height}", ClipboardItemMaxHeight);
+        });
+    }
+
+    private void HandleClipboardItemMinHeightChanged(int newHeight)
+    {
+        _uiDispatcher.Invoke(() =>
+        {
+            ClipboardItemMinHeight = newHeight;
+            _logger.Information("剪贴项最小高度已更新: {Height}", ClipboardItemMinHeight);
         });
     }
 

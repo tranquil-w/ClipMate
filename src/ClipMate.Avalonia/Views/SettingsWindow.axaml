@@ -60,8 +60,13 @@
             <TextBlock Text="{Binding HistoryLimit}" Width="60" />
           </StackPanel>
           <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+            <TextBlock Text="最小高度" Width="80" />
+            <Slider Minimum="36" Maximum="200" Value="{Binding ClipboardItemMinHeight}" Width="220" />
+            <TextBlock Text="{Binding ClipboardItemMinHeight}" Width="60" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
             <TextBlock Text="最大高度" Width="80" />
-            <Slider Minimum="60" Maximum="200" Value="{Binding ClipboardItemMaxHeight}" Width="220" />
+            <Slider Minimum="36" Maximum="200" Value="{Binding ClipboardItemMaxHeight}" Width="220" />
             <TextBlock Text="{Binding ClipboardItemMaxHeight}" Width="60" />
           </StackPanel>
         </StackPanel>

@@ -605,6 +605,42 @@
                                 </Grid>
                             </StackPanel>
 
+                            <!--  剪贴项最小高度设置  -->
+                            <Grid Margin="0,8,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    Margin="0,0,16,0"
+                                    VerticalAlignment="Center"
+                                    FontSize="14"
+                                    Foreground="{DynamicResource PrimaryTextBrush}"
+                                    Text="剪贴项最小高度" />
+
+                                <Slider
+                                    Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    IsSnapToTickEnabled="True"
+                                    Maximum="500"
+                                    Minimum="36"
+                                    TickFrequency="10"
+                                    Value="{Binding ClipboardItemMinHeight}" />
+
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Width="60"
+                                    Margin="16,0,0,0"
+                                    VerticalAlignment="Center"
+                                    FontSize="14"
+                                    FontWeight="Medium"
+                                    Foreground="{DynamicResource PrimaryBrush}"
+                                    Text="{Binding ClipboardItemMinHeight, StringFormat={}{0}px}" />
+                            </Grid>
+
                             <!--  剪贴项最大高度设置  -->
                             <Grid Margin="0,8,0,0">
                                 <Grid.ColumnDefinitions>
@@ -626,7 +662,7 @@
                                     VerticalAlignment="Center"
                                     IsSnapToTickEnabled="True"
                                     Maximum="500"
-                                    Minimum="50"
+                                    Minimum="36"
                                     TickFrequency="10"
                                     Value="{Binding ClipboardItemMaxHeight}" />
 
@@ -645,7 +681,7 @@
                                 Margin="0,8,0,0"
                                 FontSize="12"
                                 Foreground="{DynamicResource PrimaryTextBrush}"
-                                Text="💡 设置剪贴列表中每个项目显示的最大高度，范围：50-500 像素" />
+                                Text="💡 设置剪贴列表中每个项目显示的最小/最大高度，范围：36-500 像素" />
 
                             <Separator Margin="0,16,0,16" />
 

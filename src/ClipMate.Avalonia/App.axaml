@@ -36,6 +36,7 @@
             Grid.Column="0"
             Text="{Binding TextContent}"
             TextWrapping="Wrap"
+            MinHeight="{Binding DataContext.ClipboardItemMinHeight, RelativeSource={RelativeSource AncestorType=ListBox}}"
             MaxHeight="{Binding DataContext.ClipboardItemMaxHeight, RelativeSource={RelativeSource AncestorType=ListBox}}" />
           <TextBlock
             Grid.Column="1"
@@ -63,7 +64,8 @@
           <Image
             Grid.Column="0"
             Source="{Binding ImageContent}"
-            Height="{Binding DataContext.ClipboardItemMaxHeight, RelativeSource={RelativeSource AncestorType=ListBox}}"
+            MinHeight="{Binding DataContext.ClipboardItemMinHeight, RelativeSource={RelativeSource AncestorType=ListBox}}"
+            MaxHeight="{Binding DataContext.ClipboardItemMaxHeight, RelativeSource={RelativeSource AncestorType=ListBox}}"
             Stretch="Uniform" />
           <TextBlock
             Grid.Column="1"
@@ -98,6 +100,7 @@
             Grid.Column="0"
             Text="{Binding Summary}"
             TextWrapping="Wrap"
+            MinHeight="{Binding DataContext.ClipboardItemMinHeight, RelativeSource={RelativeSource AncestorType=ListBox}}"
             MaxHeight="{Binding DataContext.ClipboardItemMaxHeight, RelativeSource={RelativeSource AncestorType=ListBox}}" />
           <TextBlock
             Grid.Column="1"

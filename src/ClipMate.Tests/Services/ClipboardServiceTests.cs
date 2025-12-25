@@ -32,7 +32,7 @@ namespace ClipMate.Tests.Services
 
 	        public ClipboardServiceTests()
 	        {
-	            _settingsServiceMock.Setup(s => s.GetClipboardItemMaxHeight()).Returns(100);
+	            _settingsServiceMock.Setup(s => s.GetClipboardItemMaxHeight()).Returns(56);
                 _clipboardWriterMock
                     .Setup(w => w.TrySetAsync(It.IsAny<ClipboardPayload>(), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(true);

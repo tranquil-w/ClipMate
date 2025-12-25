@@ -42,6 +42,7 @@ public partial class SettingsViewModelBase : ObservableObject
     private readonly IUiDispatcher _uiDispatcher;
     private readonly ILogger _logger;
     private bool _isInitializing = true;
+    private bool _isAdjustingClipboardItemHeight;
     private EventHandler<KeyboardHookEventArgs>? _recordingHandler;
     private HotkeyRecordingTarget _recordingTarget = HotkeyRecordingTarget.None;
 
@@ -85,7 +86,10 @@ public partial class SettingsViewModelBase : ObservableObject
     private string _version = string.Empty;
 
     [ObservableProperty]
-    private int _clipboardItemMaxHeight = 100;
+    private int _clipboardItemMaxHeight = 56;
+
+    [ObservableProperty]
+    private int _clipboardItemMinHeight = 56;
 
     [ObservableProperty]
     private int _historyLimit = 500;
@@ -201,6 +205,7 @@ public partial class SettingsViewModelBase : ObservableObject
 
             // 加载剪贴项最大高度设置
             ClipboardItemMaxHeight = _settingsService.GetClipboardItemMaxHeight();
+            ClipboardItemMinHeight = _settingsService.GetClipboardItemMinHeight();
 
             // 加载历史记录上限设置
             HistoryLimit = _settingsService.GetHistoryLimit();
@@ -501,7 +506,16 @@ public partial class SettingsViewModelBase : ObservableObject
     {
         if (_isInitializing) return;
 
+        AdjustClipboardItemHeightRange(isMinChanged: false);
         ApplyClipboardItemMaxHeightChange();
+    }
+
+    partial void OnClipboardItemMinHeightChanged(int value)
+    {
+        if (_isInitializing) return;
+
+        AdjustClipboardItemHeightRange(isMinChanged: true);
+        ApplyClipboardItemMinHeightChange();
     }
 
     partial void OnHistoryLimitChanged(int value)
@@ -608,6 +622,41 @@ public partial class SettingsViewModelBase : ObservableObject
         ApplySettingChangeAsync(
             () => _settingsService.SetClipboardItemMaxHeight(ClipboardItemMaxHeight),
             "保存剪贴项最大高度时发生错误");
+    }
+
+    private void ApplyClipboardItemMinHeightChange()
+    {
+        ApplySettingChangeAsync(
+            () => _settingsService.SetClipboardItemMinHeight(ClipboardItemMinHeight),
+            "保存剪贴项最小高度时发生错误");
+    }
+
+    private void AdjustClipboardItemHeightRange(bool isMinChanged)
+    {
+        if (_isAdjustingClipboardItemHeight)
+        {
+            return;
+        }
+
+        _isAdjustingClipboardItemHeight = true;
+        try
+        {
+            if (ClipboardItemMinHeight > ClipboardItemMaxHeight)
+            {
+                if (isMinChanged)
+                {
+                    ClipboardItemMaxHeight = ClipboardItemMinHeight;
+                }
+                else
+                {
+                    ClipboardItemMinHeight = ClipboardItemMaxHeight;
+                }
+            }
+        }
+        finally
+        {
+            _isAdjustingClipboardItemHeight = false;
+        }
     }
 
     private void ApplyHistoryLimitChange()

@@ -51,6 +51,7 @@ namespace ClipMate.Tests.Services
             service.SetTheme("Dark");
             service.SetAutoStart(true);
             service.SetHistoryLimit(123);
+            service.SetClipboardItemMinHeight(120);
             service.SetClipboardItemMaxHeight(456);
             service.SetLogLevel(LogEventLevel.Debug);
 
@@ -66,6 +67,7 @@ namespace ClipMate.Tests.Services
             Assert.Equal("Dark", root.GetProperty("Theme").GetString());
             Assert.True(root.GetProperty("AutoStart").GetBoolean());
             Assert.Equal(123, root.GetProperty("HistoryLimit").GetInt32());
+            Assert.Equal(120, root.GetProperty("ClipboardItemMinHeight").GetInt32());
             Assert.Equal(456, root.GetProperty("ClipboardItemMaxHeight").GetInt32());
             Assert.Equal(nameof(LogEventLevel.Debug), root.GetProperty("LogLevel").GetString());
             Assert.Equal(userDir, service.GetUserFolder());
@@ -96,6 +98,7 @@ namespace ClipMate.Tests.Services
               "HotKey": "DefaultHotKey",
               "Theme": "Light",
               "HistoryLimit": 50,
+              "ClipboardItemMinHeight": 70,
               "ClipboardItemMaxHeight": 80,
               "AutoStart": false,
               "LogLevel": "Warning",
@@ -131,6 +134,7 @@ namespace ClipMate.Tests.Services
             Assert.Equal("ConfigTheme", service.GetTheme());          // 用户未提供时走 IConfiguration
             Assert.True(service.GetAutoStart());                      // 用户文件覆盖布尔值
             Assert.Equal(500, service.GetHistoryLimit());             // 数值覆盖
+            Assert.Equal(70, service.GetClipboardItemMinHeight());    // 默认文件中的有效值生效
             Assert.Equal(80, service.GetClipboardItemMaxHeight());    // 默认文件中的有效值生效
             Assert.Equal(LogEventLevel.Error, service.GetLogLevel()); // 用户文件覆盖日志级别
             Assert.Equal(userDir, service.GetUserFolder());
@@ -205,6 +209,57 @@ namespace ClipMate.Tests.Services
         }
 
         /// <summary>
+        /// 修改剪贴项最小高度时应通过 WeakReferenceMessenger 广播变更消息。
+        /// </summary>
+        [Fact]
+        public void SetClipboardItemMinHeight_ShouldSendMessageOnChange()
+        {
+            WeakReferenceMessenger.Default.Reset();
+            var service = CreateServiceWithTempPaths(BuildConfiguration(), CreateTempRoot(), out _, out _, out _);
+            var received = new List<int>();
+
+            WeakReferenceMessenger.Default.Register<ClipboardItemMinHeightChangedMessage>(
+                this,
+                (_, msg) => received.Add(msg.Value));
+
+            service.SetClipboardItemMinHeight(120);
+            service.SetClipboardItemMinHeight(120); // 重复值不应再次发送
+
+            Assert.Single(received);
+            Assert.Contains(120, received);
+        }
+
+        /// <summary>
+        /// 当最小高度高于最大高度时，应同步提升最大高度。
+        /// </summary>
+        [Fact]
+        public void SetClipboardItemMinHeight_ShouldAdjustMaxWhenMinExceedsMax()
+        {
+            var service = CreateServiceWithTempPaths(BuildConfiguration(), CreateTempRoot(), out _, out _, out _);
+
+            service.SetClipboardItemMaxHeight(80);
+            service.SetClipboardItemMinHeight(120);
+
+            Assert.Equal(120, service.GetClipboardItemMinHeight());
+            Assert.Equal(120, service.GetClipboardItemMaxHeight());
+        }
+
+        /// <summary>
+        /// 当最大高度低于最小高度时，应同步降低最小高度。
+        /// </summary>
+        [Fact]
+        public void SetClipboardItemMaxHeight_ShouldAdjustMinWhenMaxBelowMin()
+        {
+            var service = CreateServiceWithTempPaths(BuildConfiguration(), CreateTempRoot(), out _, out _, out _);
+
+            service.SetClipboardItemMinHeight(120);
+            service.SetClipboardItemMaxHeight(80);
+
+            Assert.Equal(80, service.GetClipboardItemMinHeight());
+            Assert.Equal(80, service.GetClipboardItemMaxHeight());
+        }
+
+        /// <summary>
         /// 默认值填充：当 HotKey/Theme/HistoryLimit 等缺失或非正数时，应回落到内置默认值。
         /// </summary>
         [Fact]
@@ -216,7 +271,8 @@ namespace ClipMate.Tests.Services
                 ["FavoriteFilterHotKey"] = "Win + B",
                 ["Theme"] = "System",
                 ["HistoryLimit"] = "500",
-                ["ClipboardItemMaxHeight"] = "100",
+                ["ClipboardItemMinHeight"] = "56",
+                ["ClipboardItemMaxHeight"] = "56",
                 ["WindowPosition"] = "FollowCaret",
                 ["LogLevel"] = "Information",
                 ["ConnectionStrings:ClipMateDb"] = "Data Source=ClipMate.db"
@@ -231,6 +287,7 @@ namespace ClipMate.Tests.Services
                 FavoriteFilterHotKey = null,
                 Theme = "",
                 HistoryLimit = 0,
+                ClipboardItemMinHeight = 0,
                 ClipboardItemMaxHeight = 0,
                 ConnectionStrings = new ConnectionStrings { ClipMateDb = "" },  
                 LogLevel = (LogEventLevel)999
@@ -242,7 +299,8 @@ namespace ClipMate.Tests.Services
             Assert.Equal("Win + B", settings.FavoriteFilterHotKey);
             Assert.Equal("System", settings.Theme);
             Assert.Equal(500, settings.HistoryLimit);
-            Assert.Equal(100, settings.ClipboardItemMaxHeight);
+            Assert.Equal(56, settings.ClipboardItemMinHeight);
+            Assert.Equal(56, settings.ClipboardItemMaxHeight);
             Assert.Equal("Data Source=ClipMate.db", settings.ConnectionStrings?.ClipMateDb);
             Assert.Equal(LogEventLevel.Information, settings.LogLevel);
         }
@@ -259,6 +317,7 @@ namespace ClipMate.Tests.Services
             service.SetFavoriteFilterHotKey("Ctrl+Alt+H");
             service.SetTheme("Light");
             service.SetHistoryLimit(42);
+            service.SetClipboardItemMinHeight(120);
             service.SetClipboardItemMaxHeight(300);
             service.SetLogLevel(LogEventLevel.Warning);
 
@@ -266,6 +325,7 @@ namespace ClipMate.Tests.Services
             Assert.Equal("Ctrl+Alt+H", service.GetFavoriteFilterHotKey());
             Assert.Equal("Light", service.GetTheme());
             Assert.Equal(42, service.GetHistoryLimit());
+            Assert.Equal(120, service.GetClipboardItemMinHeight());
             Assert.Equal(300, service.GetClipboardItemMaxHeight());
             Assert.Equal(LogEventLevel.Warning, service.GetLogLevel());
         }
@@ -375,7 +435,8 @@ namespace ClipMate.Tests.Services
               "HotKey": "Ctrl + `",
               "Theme": "System",
               "HistoryLimit": 500,
-              "ClipboardItemMaxHeight": 100
+              "ClipboardItemMinHeight": 56,
+              "ClipboardItemMaxHeight": 56
             }
             """;
             File.WriteAllText(defaultSettingsPath, defaultJson);
@@ -389,7 +450,8 @@ namespace ClipMate.Tests.Services
             Assert.Equal("Ctrl + `", service.GetHotKey());
             Assert.Equal("System", service.GetTheme());
             Assert.Equal(500, service.GetHistoryLimit());
-            Assert.Equal(100, service.GetClipboardItemMaxHeight());
+            Assert.Equal(56, service.GetClipboardItemMinHeight());
+            Assert.Equal(56, service.GetClipboardItemMaxHeight());
         }
 
         /// <summary>

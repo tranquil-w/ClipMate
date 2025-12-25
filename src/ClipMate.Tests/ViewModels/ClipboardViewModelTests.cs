@@ -28,7 +28,8 @@ namespace ClipMate.Tests.ViewModels
 
         public ClipboardViewModelTests()
         {
-            _settingsMock.Setup(s => s.GetClipboardItemMaxHeight()).Returns(100);
+            _settingsMock.Setup(s => s.GetClipboardItemMaxHeight()).Returns(56);
+            _settingsMock.Setup(s => s.GetClipboardItemMinHeight()).Returns(56);
             _historyUseCaseMock
                 .Setup(h => h.GetAllDescAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<ClipboardItem>());

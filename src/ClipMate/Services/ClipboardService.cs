@@ -28,7 +28,7 @@ namespace ClipMate.Services
             var height = settingsService.GetClipboardItemMaxHeight();
             if (height <= 0)
             {
-                height = 100;
+                height = 56;
             }
 
             return Math.Clamp(height * 2, 64, 512);

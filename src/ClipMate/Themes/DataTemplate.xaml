@@ -25,6 +25,7 @@
             </Grid.ColumnDefinitions>
             <TextBlock
                 Grid.Column="0"
+                MinHeight="{Binding DataContext.ClipboardItemMinHeight, RelativeSource={RelativeSource AncestorType=ListView}}"
                 MaxHeight="{Binding DataContext.ClipboardItemMaxHeight, RelativeSource={RelativeSource AncestorType=ListView}}"
                 Text="{Binding TextContent}"
                 TextTrimming="CharacterEllipsis"
@@ -59,6 +60,7 @@
             </Grid.ColumnDefinitions>
             <RichTextBox
                 Grid.Column="0"
+                MinHeight="{Binding DataContext.ClipboardItemMinHeight, RelativeSource={RelativeSource AncestorType=ListView}}"
                 MaxHeight="{Binding DataContext.ClipboardItemMaxHeight, RelativeSource={RelativeSource AncestorType=ListView}}"
                 IsReadOnly="True">
                 <RichTextBox.ToolTip>
@@ -99,7 +101,8 @@
             </Grid.ColumnDefinitions>
             <Image
                 Grid.Column="0"
-                Height="{Binding DataContext.ClipboardItemMaxHeight, RelativeSource={RelativeSource AncestorType=ListView}}"
+                MinHeight="{Binding DataContext.ClipboardItemMinHeight, RelativeSource={RelativeSource AncestorType=ListView}}"
+                MaxHeight="{Binding DataContext.ClipboardItemMaxHeight, RelativeSource={RelativeSource AncestorType=ListView}}"
                 Source="{Binding ImageContent}">
                 <Image.ToolTip>
                     <ToolTip MaxWidth="600">
@@ -136,6 +139,7 @@
             </Grid.ColumnDefinitions>
             <TextBlock
                 Grid.Column="0"
+                MinHeight="{Binding DataContext.ClipboardItemMinHeight, RelativeSource={RelativeSource AncestorType=ListView}}"
                 MaxHeight="{Binding DataContext.ClipboardItemMaxHeight, RelativeSource={RelativeSource AncestorType=ListView}}"
                 Text="{Binding Summary}"
                 TextTrimming="CharacterEllipsis"

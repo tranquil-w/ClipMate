@@ -329,7 +329,8 @@ ClipMate/
     "SilentStart": false,
     "AlwaysRunAsAdmin": false,
     "HistoryLimit": 500,
-    "ClipboardItemMaxHeight": 100,
+    "ClipboardItemMinHeight": 56,
+    "ClipboardItemMaxHeight": 56,
     "EnableWinComboGuardInjection": true,
     "ImeHintsEnabled": true,
     "LogLevel": "Information"
@@ -345,6 +346,7 @@ ClipMate/
 - `SilentStart`: 是否静默启动（启动时不显示窗口）
 - `AlwaysRunAsAdmin`: 是否始终以管理员身份运行
 - `HistoryLimit`: 历史记录保留上限
+- `ClipboardItemMinHeight`: 剪贴板项最小显示高度
 - `ClipboardItemMaxHeight`: 剪贴板项最大显示高度
 - `EnableWinComboGuardInjection`: 是否启用 Win 组合键防护
 - `ImeHintsEnabled`: 是否启用输入法提示

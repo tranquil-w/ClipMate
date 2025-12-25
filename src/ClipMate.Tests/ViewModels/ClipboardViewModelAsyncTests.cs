@@ -26,7 +26,8 @@ public sealed class ClipboardViewModelAsyncTests : TestBase
 
     public ClipboardViewModelAsyncTests()
     {
-        _settingsMock.Setup(s => s.GetClipboardItemMaxHeight()).Returns(100);
+        _settingsMock.Setup(s => s.GetClipboardItemMaxHeight()).Returns(56);
+        _settingsMock.Setup(s => s.GetClipboardItemMinHeight()).Returns(56);
         _clipboardMock
             .Setup(s => s.Create(It.IsAny<ClipboardItem>()))
             .Returns<ClipboardItem>(CreateClipboardContent);
