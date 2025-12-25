@@ -9,6 +9,7 @@
         <Grid Grid.Column="0">
           <TextBox
             x:Name="SearchBox"
+            Classes="clipmate-search"
             Text="{Binding SearchQuery, Mode=TwoWay}"
             GotFocus="SearchBox_GotFocus"
             KeyDown="SearchBox_KeyDown"

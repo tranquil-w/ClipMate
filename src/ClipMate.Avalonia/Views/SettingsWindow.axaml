@@ -27,7 +27,7 @@
 
                 <Border
                     Padding="12"
-                    Background="{DynamicResource ClipMateBackgroundBrush}"
+                    Background="{DynamicResource ClipMateCardBackgroundBrush}"
                     CornerRadius="8">
                     <StackPanel Spacing="8">
                         <TextBlock FontWeight="SemiBold" Text="快捷键" />
@@ -46,7 +46,7 @@
 
                 <Border
                     Padding="12"
-                    Background="{DynamicResource ClipMateBackgroundBrush}"
+                    Background="{DynamicResource ClipMateCardBackgroundBrush}"
                     CornerRadius="8">
                     <StackPanel Spacing="8">
                         <TextBlock FontWeight="SemiBold" Text="主题" />
@@ -60,7 +60,7 @@
 
                 <Border
                     Padding="12"
-                    Background="{DynamicResource ClipMateBackgroundBrush}"
+                    Background="{DynamicResource ClipMateCardBackgroundBrush}"
                     CornerRadius="8">
                     <StackPanel Spacing="8">
                         <TextBlock FontWeight="SemiBold" Text="窗口位置" />
@@ -74,7 +74,7 @@
 
                 <Border
                     Padding="12"
-                    Background="{DynamicResource ClipMateBackgroundBrush}"
+                    Background="{DynamicResource ClipMateCardBackgroundBrush}"
                     CornerRadius="8">
                     <StackPanel Spacing="8">
                         <TextBlock FontWeight="SemiBold" Text="历史记录" />
@@ -119,7 +119,7 @@
 
                 <Border
                     Padding="12"
-                    Background="{DynamicResource ClipMateBackgroundBrush}"
+                    Background="{DynamicResource ClipMateCardBackgroundBrush}"
                     CornerRadius="8">
                     <StackPanel Spacing="8">
                         <TextBlock FontWeight="SemiBold" Text="启动与权限" />
@@ -134,7 +134,7 @@
 
                 <Border
                     Padding="12"
-                    Background="{DynamicResource ClipMateBackgroundBrush}"
+                    Background="{DynamicResource ClipMateCardBackgroundBrush}"
                     CornerRadius="8">
                     <StackPanel Spacing="8">
                         <TextBlock FontWeight="SemiBold" Text="日志" />
@@ -150,7 +150,7 @@
 
                 <Border
                     Padding="12"
-                    Background="{DynamicResource ClipMateBackgroundBrush}"
+                    Background="{DynamicResource ClipMateCardBackgroundBrush}"
                     CornerRadius="8">
                     <StackPanel Spacing="8">
                         <TextBlock FontWeight="SemiBold" Text="版本" />

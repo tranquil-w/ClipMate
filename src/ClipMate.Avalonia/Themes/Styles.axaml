@@ -16,6 +16,12 @@
           <Color x:Key="ClipMateItemBorderColor">#33000000</Color>
           <Color x:Key="ClipMateItemHoverColor">#E4EAED</Color>
           <Color x:Key="ClipMateItemSelectedColor">#D6E0E3</Color>
+          <Color x:Key="ClipMateCardBackgroundColor">#CCD6DEDF</Color>
+          <Color x:Key="ClipMateButtonColor">#C06D58</Color>
+          <Color x:Key="ClipMateControlSurfaceColor">#E6F3F5F7</Color>
+          <Color x:Key="ClipMateToggleCheckedBackgroundColor">#EEF1F3</Color>
+          <Color x:Key="ClipMateToggleCheckedBorderColor">#CEC9C0</Color>
+          <Color x:Key="ClipMateToggleCheckedForegroundColor">#3B3A36</Color>
         </ResourceDictionary>
         <ResourceDictionary x:Key="Dark">
           <Color x:Key="ClipMateBackgroundColor">#FF232526</Color>
@@ -29,6 +35,12 @@
           <Color x:Key="ClipMateItemBorderColor">#66FFFFFF</Color>
           <Color x:Key="ClipMateItemHoverColor">#B33A3D3F</Color>
           <Color x:Key="ClipMateItemSelectedColor">#CC2E3133</Color>
+          <Color x:Key="ClipMateCardBackgroundColor">#CC232526</Color>
+          <Color x:Key="ClipMateButtonColor">#C48548</Color>
+          <Color x:Key="ClipMateControlSurfaceColor">#CC2B2E33</Color>
+          <Color x:Key="ClipMateToggleCheckedBackgroundColor">#34373A</Color>
+          <Color x:Key="ClipMateToggleCheckedBorderColor">#4A4E52</Color>
+          <Color x:Key="ClipMateToggleCheckedForegroundColor">#D2CEC4</Color>
         </ResourceDictionary>
       </ResourceDictionary.ThemeDictionaries>
 
@@ -43,6 +55,12 @@
       <SolidColorBrush x:Key="ClipMateItemBorderBrush" Color="{DynamicResource ClipMateItemBorderColor}" />
       <SolidColorBrush x:Key="ClipMateItemHoverBrush" Color="{DynamicResource ClipMateItemHoverColor}" />
       <SolidColorBrush x:Key="ClipMateItemSelectedBrush" Color="{DynamicResource ClipMateItemSelectedColor}" />
+      <SolidColorBrush x:Key="ClipMateCardBackgroundBrush" Color="{DynamicResource ClipMateCardBackgroundColor}" />
+      <SolidColorBrush x:Key="ClipMateButtonBrush" Color="{DynamicResource ClipMateButtonColor}" />
+      <SolidColorBrush x:Key="ClipMateControlSurfaceBrush" Color="{DynamicResource ClipMateControlSurfaceColor}" />
+      <SolidColorBrush x:Key="ClipMateToggleCheckedBackgroundBrush" Color="{DynamicResource ClipMateToggleCheckedBackgroundColor}" />
+      <SolidColorBrush x:Key="ClipMateToggleCheckedBorderBrush" Color="{DynamicResource ClipMateToggleCheckedBorderColor}" />
+      <SolidColorBrush x:Key="ClipMateToggleCheckedForegroundBrush" Color="{DynamicResource ClipMateToggleCheckedForegroundColor}" />
 
       <ControlTheme x:Key="ClipMateListBoxItemTheme" TargetType="ListBoxItem">
         <Setter Property="Margin" Value="0" />
@@ -78,15 +96,27 @@
     <Setter Property="Background" Value="{DynamicResource ClipMateSurfaceBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource ClipMateBorderBrush}" />
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="CornerRadius" Value="4" />
     <Setter Property="Padding" Value="8" />
   </Style>
 
+  <Style Selector="TextBox.clipmate-search">
+    <Setter Property="Background" Value="{DynamicResource ClipMateControlSurfaceBrush}" />
+  </Style>
+
+  <Style Selector="TextBox.clipmate-search:focus /template/ Border">
+    <Setter Property="BorderBrush" Value="{DynamicResource ClipMateItemBorderBrush}" />
+  </Style>
+
+  <Style Selector="TextBox.clipmate-search:focus-within /template/ Border">
+    <Setter Property="BorderBrush" Value="{DynamicResource ClipMateItemBorderBrush}" />
+  </Style>
+
   <Style Selector="Button">
-    <Setter Property="Background" Value="{DynamicResource ClipMateAccentBrush}" />
+    <Setter Property="Background" Value="{DynamicResource ClipMateButtonBrush}" />
     <Setter Property="Foreground" Value="White" />
     <Setter Property="Padding" Value="10,6" />
-    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="CornerRadius" Value="4" />
   </Style>
 
   <Style Selector="Button.secondary">
@@ -97,18 +127,44 @@
   </Style>
 
   <Style Selector="ToggleButton.clipmate-toggle">
-    <Setter Property="Background" Value="{DynamicResource ClipMateSurfaceBrush}" />
+    <Setter Property="Background" Value="{DynamicResource ClipMateControlSurfaceBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource ClipMateMutedTextBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource ClipMateBorderBrush}" />
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="CornerRadius" Value="4" />
     <Setter Property="Padding" Value="0" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border
+          Background="{TemplateBinding Background}"
+          BorderBrush="{TemplateBinding BorderBrush}"
+          BorderThickness="{TemplateBinding BorderThickness}"
+          CornerRadius="{TemplateBinding CornerRadius}"
+          Padding="{TemplateBinding Padding}">
+          <ContentPresenter
+            Content="{TemplateBinding Content}"
+            ContentTemplate="{TemplateBinding ContentTemplate}"
+            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </Border>
+      </ControlTemplate>
+    </Setter>
   </Style>
 
   <Style Selector="ToggleButton.clipmate-toggle:checked">
-    <Setter Property="Background" Value="{DynamicResource ClipMateAccentBrush}" />
-    <Setter Property="Foreground" Value="White" />
-    <Setter Property="BorderBrush" Value="{DynamicResource ClipMateAccentBrush}" />
+    <Setter Property="Background" Value="{DynamicResource ClipMateToggleCheckedBackgroundBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource ClipMateToggleCheckedForegroundBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource ClipMateToggleCheckedBorderBrush}" />
+  </Style>
+
+  <Style Selector="ToggleButton.clipmate-toggle TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource ClipMateMutedTextBrush}" />
+  </Style>
+
+  <Style Selector="ToggleButton.clipmate-toggle:checked TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource ClipMateToggleCheckedForegroundBrush}" />
   </Style>
 
   <Style Selector="ScrollBar[Orientation=Vertical]">
