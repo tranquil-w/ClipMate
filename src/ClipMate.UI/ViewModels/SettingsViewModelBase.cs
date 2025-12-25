@@ -220,6 +220,7 @@ public partial class SettingsViewModelBase : ObservableObject
             IsAlwaysRunAsAdmin = _settingsService.GetAlwaysRunAsAdmin();
 
             SelectedLogLevel = LogLevelPolicy.Normalize(_settingsService.GetLogLevel());
+            UpdateSelectedLogLevelOption(SelectedLogLevel);
 
             // 更新管理员状态
             UpdateAdminStatus();

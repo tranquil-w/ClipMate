@@ -1,112 +1,163 @@
 <Window
+    x:Class="ClipMate.Avalonia.Views.SettingsWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:ClipMate.Avalonia.ViewModels"
-    x:Class="ClipMate.Avalonia.Views.SettingsWindow"
     Title="设置"
     Width="520"
     Height="680"
     MinWidth="420"
     MinHeight="520"
+    Background="Transparent"
+    Icon="avares://ClipMate.Avalonia/Assets/ClipMate.ico"
+    TransparencyLevelHint="Mica, AcrylicBlur, Blur"
     WindowStartupLocation="CenterOwner">
-  <ScrollViewer>
-    <StackPanel Margin="16" Spacing="16">
-      <TextBlock FontSize="18" FontWeight="Bold" Text="设置" />
+    <Border
+        Padding="6"
+        Background="{DynamicResource ClipMateOverlayBackgroundBrush}"
+        BorderBrush="{DynamicResource ClipMateBorderBrush}"
+        BorderThickness="1"
+        CornerRadius="8">
+        <ScrollViewer>
+            <StackPanel Margin="16" Spacing="16">
+                <TextBlock
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Text="设置" />
 
-      <Border Padding="12" Background="{DynamicResource ClipMateSurfaceBrush}" CornerRadius="8">
-        <StackPanel Spacing="8">
-          <TextBlock FontWeight="SemiBold" Text="快捷键" />
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock Text="主窗口" Width="80" />
-            <TextBlock Text="{Binding CurrentHotKey}" Width="200" />
-            <Button Content="录制" Command="{Binding RecordHotKeyCommand}" />
-          </StackPanel>
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock Text="收藏筛选" Width="80" />
-            <TextBlock Text="{Binding FavoriteFilterHotKey}" Width="200" />
-            <Button Content="录制" Command="{Binding RecordFavoriteFilterHotKeyCommand}" />
-          </StackPanel>
-        </StackPanel>
-      </Border>
+                <Border
+                    Padding="12"
+                    Background="{DynamicResource ClipMateBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Spacing="8">
+                        <TextBlock FontWeight="SemiBold" Text="快捷键" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Width="80" Text="主窗口" />
+                            <TextBlock Width="200" Text="{Binding CurrentHotKey}" />
+                            <Button Command="{Binding RecordHotKeyCommand}" Content="录制" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Width="80" Text="收藏筛选" />
+                            <TextBlock Width="200" Text="{Binding FavoriteFilterHotKey}" />
+                            <Button Command="{Binding RecordFavoriteFilterHotKeyCommand}" Content="录制" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
 
-      <Border Padding="12" Background="{DynamicResource ClipMateSurfaceBrush}" CornerRadius="8">
-        <StackPanel Spacing="8">
-          <TextBlock FontWeight="SemiBold" Text="主题" />
-          <StackPanel Orientation="Horizontal" Spacing="12">
-            <RadioButton Content="浅色" IsChecked="{Binding IsLightTheme}" />
-            <RadioButton Content="深色" IsChecked="{Binding IsDarkTheme}" />
-            <RadioButton Content="跟随系统" IsChecked="{Binding IsSystemTheme}" />
-          </StackPanel>
-        </StackPanel>
-      </Border>
+                <Border
+                    Padding="12"
+                    Background="{DynamicResource ClipMateBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Spacing="8">
+                        <TextBlock FontWeight="SemiBold" Text="主题" />
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <RadioButton Content="浅色" IsChecked="{Binding IsLightTheme}" />
+                            <RadioButton Content="深色" IsChecked="{Binding IsDarkTheme}" />
+                            <RadioButton Content="跟随系统" IsChecked="{Binding IsSystemTheme}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
 
-      <Border Padding="12" Background="{DynamicResource ClipMateSurfaceBrush}" CornerRadius="8">
-        <StackPanel Spacing="8">
-          <TextBlock FontWeight="SemiBold" Text="窗口位置" />
-          <StackPanel Orientation="Horizontal" Spacing="12">
-            <RadioButton Content="跟随光标" IsChecked="{Binding IsFollowCaret}" />
-            <RadioButton Content="跟随鼠标" IsChecked="{Binding IsFollowMouse}" />
-            <RadioButton Content="屏幕居中" IsChecked="{Binding IsScreenCenter}" />
-          </StackPanel>
-        </StackPanel>
-      </Border>
+                <Border
+                    Padding="12"
+                    Background="{DynamicResource ClipMateBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Spacing="8">
+                        <TextBlock FontWeight="SemiBold" Text="窗口位置" />
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <RadioButton Content="跟随光标" IsChecked="{Binding IsFollowCaret}" />
+                            <RadioButton Content="跟随鼠标" IsChecked="{Binding IsFollowMouse}" />
+                            <RadioButton Content="屏幕居中" IsChecked="{Binding IsScreenCenter}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
 
-      <Border Padding="12" Background="{DynamicResource ClipMateSurfaceBrush}" CornerRadius="8">
-        <StackPanel Spacing="8">
-          <TextBlock FontWeight="SemiBold" Text="历史记录" />
-          <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-            <TextBlock Text="上限" Width="80" />
-            <Slider Minimum="50" Maximum="2000" Value="{Binding HistoryLimit}" Width="220" />
-            <TextBlock Text="{Binding HistoryLimit}" Width="60" />
-          </StackPanel>
-          <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-            <TextBlock Text="最小高度" Width="80" />
-            <Slider Minimum="36" Maximum="200" Value="{Binding ClipboardItemMinHeight}" Width="220" />
-            <TextBlock Text="{Binding ClipboardItemMinHeight}" Width="60" />
-          </StackPanel>
-          <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-            <TextBlock Text="最大高度" Width="80" />
-            <Slider Minimum="36" Maximum="200" Value="{Binding ClipboardItemMaxHeight}" Width="220" />
-            <TextBlock Text="{Binding ClipboardItemMaxHeight}" Width="60" />
-          </StackPanel>
-        </StackPanel>
-      </Border>
+                <Border
+                    Padding="12"
+                    Background="{DynamicResource ClipMateBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Spacing="8">
+                        <TextBlock FontWeight="SemiBold" Text="历史记录" />
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <TextBlock Width="80" Text="上限" />
+                            <Slider
+                                Width="220"
+                                Maximum="2000"
+                                Minimum="50"
+                                Value="{Binding HistoryLimit}" />
+                            <TextBlock Width="60" Text="{Binding HistoryLimit}" />
+                        </StackPanel>
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <TextBlock Width="80" Text="最小高度" />
+                            <Slider
+                                Width="220"
+                                Maximum="200"
+                                Minimum="36"
+                                Value="{Binding ClipboardItemMinHeight}" />
+                            <TextBlock Width="60" Text="{Binding ClipboardItemMinHeight}" />
+                        </StackPanel>
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Spacing="12">
+                            <TextBlock Width="80" Text="最大高度" />
+                            <Slider
+                                Width="220"
+                                Maximum="200"
+                                Minimum="36"
+                                Value="{Binding ClipboardItemMaxHeight}" />
+                            <TextBlock Width="60" Text="{Binding ClipboardItemMaxHeight}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
 
-      <Border Padding="12" Background="{DynamicResource ClipMateSurfaceBrush}" CornerRadius="8">
-        <StackPanel Spacing="8">
-          <TextBlock FontWeight="SemiBold" Text="启动与权限" />
-          <CheckBox Content="开机自启" IsChecked="{Binding IsAutoStartEnabled}" />
-          <CheckBox Content="静默启动" IsChecked="{Binding IsSilentStart}" />
-          <CheckBox Content="始终以管理员身份运行" IsChecked="{Binding IsAlwaysRunAsAdmin}" />
-          <TextBlock Text="{Binding AdminStatusText}" Foreground="{DynamicResource ClipMateMutedTextBrush}" />
-          <TextBlock Text="{Binding AutoStartMethodText}" Foreground="{DynamicResource ClipMateMutedTextBrush}" />
-          <Button Content="以管理员权限重启" Command="{Binding RestartAsAdminCommand}" />
-        </StackPanel>
-      </Border>
+                <Border
+                    Padding="12"
+                    Background="{DynamicResource ClipMateBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Spacing="8">
+                        <TextBlock FontWeight="SemiBold" Text="启动与权限" />
+                        <CheckBox Content="开机自启" IsChecked="{Binding IsAutoStartEnabled}" />
+                        <CheckBox Content="静默启动" IsChecked="{Binding IsSilentStart}" />
+                        <CheckBox Content="始终以管理员身份运行" IsChecked="{Binding IsAlwaysRunAsAdmin}" />
+                        <TextBlock Foreground="{DynamicResource ClipMateMutedTextBrush}" Text="{Binding AdminStatusText}" />
+                        <TextBlock Foreground="{DynamicResource ClipMateMutedTextBrush}" Text="{Binding AutoStartMethodText}" />
+                        <Button Command="{Binding RestartAsAdminCommand}" Content="以管理员权限重启" />
+                    </StackPanel>
+                </Border>
 
-      <Border Padding="12" Background="{DynamicResource ClipMateSurfaceBrush}" CornerRadius="8">
-        <StackPanel Spacing="8">
-          <TextBlock FontWeight="SemiBold" Text="日志" />
-          <ComboBox
-            ItemsSource="{Binding LogLevels}"
-            SelectedItem="{Binding SelectedLogLevelOption}">
-            <ComboBox.ItemTemplate>
-              <DataTemplate>
-                <TextBlock Text="{Binding DisplayName}" />
-              </DataTemplate>
-            </ComboBox.ItemTemplate>
-          </ComboBox>
-        </StackPanel>
-      </Border>
+                <Border
+                    Padding="12"
+                    Background="{DynamicResource ClipMateBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Spacing="8">
+                        <TextBlock FontWeight="SemiBold" Text="日志" />
+                        <ComboBox ItemsSource="{Binding LogLevels}" SelectedItem="{Binding SelectedLogLevelOption}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding DisplayName}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Border>
 
-      <Border Padding="12" Background="{DynamicResource ClipMateSurfaceBrush}" CornerRadius="8">
-        <StackPanel Spacing="8">
-          <TextBlock FontWeight="SemiBold" Text="版本" />
-          <TextBlock Text="{Binding Version}" Foreground="{DynamicResource ClipMateMutedTextBrush}" />
-        </StackPanel>
-      </Border>
-
-      <Button Classes="secondary" Content="关闭" HorizontalAlignment="Right" Command="{Binding CloseCommand}" />
-    </StackPanel>
-  </ScrollViewer>
+                <Border
+                    Padding="12"
+                    Background="{DynamicResource ClipMateBackgroundBrush}"
+                    CornerRadius="8">
+                    <StackPanel Spacing="8">
+                        <TextBlock FontWeight="SemiBold" Text="版本" />
+                        <TextBlock Foreground="{DynamicResource ClipMateMutedTextBrush}" Text="{Binding Version}" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
 </Window>
