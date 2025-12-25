@@ -36,6 +36,7 @@ public partial class App : Application
     private const string MutexName = "ClipMate";
     private static Mutex? _mutex;
     private ITrayIcon? _trayIcon;
+    private MainWindow? _mainWindow;
     private volatile bool _isMainWindowVisible;
     private volatile bool _isMainWindowActive;
     private string _appDataFolder = string.Empty;
@@ -75,7 +76,7 @@ public partial class App : Application
         _serviceProvider = services.BuildServiceProvider();
 
         var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-        desktop.MainWindow = mainWindow;
+        _mainWindow = mainWindow;
         desktop.Exit += (_, _) => HandleExit();
 
         var themeService = _serviceProvider.GetRequiredService<IThemeService>();
@@ -85,6 +86,7 @@ public partial class App : Application
         var silentStart = ReadSilentStartSetting();
         if (!silentStart)
         {
+            desktop.MainWindow = mainWindow;
             NoActivateWindowController.ShowNoActivate(mainWindow);
         }
 
@@ -394,12 +396,21 @@ public partial class App : Application
             return;
         }
 
-        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop || desktop.MainWindow == null)
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
         {
             return;
         }
 
-        var mainWindow = desktop.MainWindow;
+        var mainWindow = _mainWindow ?? desktop.MainWindow;
+        if (mainWindow == null)
+        {
+            return;
+        }
+
+        if (desktop.MainWindow == null)
+        {
+            desktop.MainWindow = mainWindow;
+        }
         if (mainWindow.IsVisible)
         {
             mainWindow.Close();
