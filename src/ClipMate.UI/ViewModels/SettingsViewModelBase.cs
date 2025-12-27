@@ -505,7 +505,7 @@ public partial class SettingsViewModelBase : ObservableObject
 
     partial void OnClipboardItemMaxHeightChanged(int value)
     {
-        if (_isInitializing) return;
+        if (_isInitializing || _isAdjustingClipboardItemHeight) return;
 
         AdjustClipboardItemHeightRange(isMinChanged: false);
         ApplyClipboardItemMaxHeightChange();
@@ -513,7 +513,7 @@ public partial class SettingsViewModelBase : ObservableObject
 
     partial void OnClipboardItemMinHeightChanged(int value)
     {
-        if (_isInitializing) return;
+        if (_isInitializing || _isAdjustingClipboardItemHeight) return;
 
         AdjustClipboardItemHeightRange(isMinChanged: true);
         ApplyClipboardItemMinHeightChange();

@@ -55,6 +55,8 @@ public partial class App : Application
             return;
         }
 
+        desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
         if (TryRestartAsAdminIfNeeded())
         {
             RequestShutdown(desktop);

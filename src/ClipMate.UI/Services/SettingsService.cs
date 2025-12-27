@@ -12,6 +12,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using AppConstants = ClipMate.Infrastructure.Constants;
 
 namespace ClipMate.Services
@@ -25,6 +26,7 @@ namespace ClipMate.Services
         private readonly string _defaultSettingsFilePath;
         private readonly string _userSettingsDirectory;
         private readonly string _settingsFilePath;
+        private readonly SemaphoreSlim _saveLock = new(1, 1);
         private readonly JsonSerializerOptions _serializerOptions = new()
         {
             WriteIndented = true,
@@ -251,6 +253,7 @@ namespace ClipMate.Services
 
         public async Task SaveAsync()
         {
+            await _saveLock.WaitAsync();
             try
             {
                 Directory.CreateDirectory(_userSettingsDirectory);
@@ -263,6 +266,10 @@ namespace ClipMate.Services
             {
                 _logger.Error(ex, "保存设置时发生错误");
                 throw;
+            }
+            finally
+            {
+                _saveLock.Release();
             }
         }
 
